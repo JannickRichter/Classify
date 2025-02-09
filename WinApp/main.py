@@ -53,23 +53,3 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     sys.exit(app.exec())
-
-
-"""
-from PySide6.QtWidgets import QApplication, QWidget
-from rockwidget import RocWidget
-from edupage_connect import EdupageAPI
-import sys
-
-app = QApplication(sys.argv)
-
-edupage = EdupageAPI()
-edupage.login(username="jannickrichter@web.de", password="JRNinjago2007!?", school="duden-gymn")
-print(edupage.isLoggedIn())
-print(edupage.getAbiGrade())
-
-window = RocWidget()
-window.show()
-
-app.exec()
-"""
