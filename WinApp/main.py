@@ -39,7 +39,7 @@ class Backend(QObject):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("./material/icon1.png"))
+    app.setWindowIcon(QIcon("./WinApp/material/icon1.png"))
     engine = QQmlApplicationEngine()
 
     backend = Backend()
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Backend in QML verfügbar machen
     engine.rootContext().setContextProperty("backend", backend)
 
-    engine.load("./qml/main.qml")  # Lade die UI
+    engine.load("./WinApp/qml/main.qml")  # Lade die UI
 
     if not engine.rootObjects():
         sys.exit(-1)

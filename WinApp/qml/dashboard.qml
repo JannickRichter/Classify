@@ -14,7 +14,8 @@ Item {
 
     Connections {
         target: backend
-        onSendData: (data) => {
+
+        function onSendData(data) {
         }
     }
 

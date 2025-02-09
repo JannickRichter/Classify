@@ -17,7 +17,8 @@ Window {
 
     Connections {
         target: backend
-        onLoginSuccess: (success) => {
+
+        function onLoginSuccess(success) {
             if (success) {
                 pageLoader.source = "dashboard.qml"
             }

@@ -210,11 +210,13 @@ Item {
 
     Connections {
         target: backend
-        onLoginAttention: {
+
+        function onLoginAttention() {
             busyIndicator.enabled = true
             busyIndicator.visible = true
         }
-        onLoginSuccess: (success) => {
+
+        function onLoginSuccess(success) {
             if (!success) {
                 busyIndicator.enabled = false
                 busyIndicator.visible = false
