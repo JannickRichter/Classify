@@ -52,4 +52,4 @@ if __name__ == "__main__":
     if not engine.rootObjects():
         sys.exit(-1)
 
-    sys.exit(app.exec())
+    sys.exit(app.exec()) # Starte die Applikation
