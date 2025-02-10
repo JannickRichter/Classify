@@ -65,3 +65,4 @@ class EdupageAPI(Edupage):
             count += 1
 
         return sum / count
+        
