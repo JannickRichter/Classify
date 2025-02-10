@@ -5,11 +5,128 @@ Item {
     width: 1920
     height: 1080
 
+    property string selector: "statistic"
+
     Image {
         id: background1
         width: 1920
         height: 1080
         source: "../material/bg1.png"
+    }
+
+    Rectangle {
+        id: rectangle
+        color: "#ffffff"
+        radius: 20
+        anchors.fill: parent
+        anchors.leftMargin: 85
+        anchors.rightMargin: 85
+        anchors.topMargin: 85
+        anchors.bottomMargin: 85
+
+        Rectangle {
+            id: rectangle1
+            color: "#dbdbdb"
+            radius: 20
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.top
+            anchors.leftMargin: 30
+            anchors.rightMargin: 30
+            anchors.topMargin: 30
+            anchors.bottomMargin: -100
+
+            Row {
+                id: row
+                anchors.fill: parent
+
+                Rectangle {
+                    id: rectangle2
+                    width: row.width / 2
+                    height: row.height
+                    color: "#dbdbdb"
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 300  // Übergangsdauer in Millisekunden
+                        }
+                    }
+                    radius: 20
+
+                    Text {
+                        id: _text
+                        text: qsTr("ABITUR NOTE")
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: 28
+                        font.bold: true
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+                    MouseArea {
+                        id: mouseArea
+                        width: parent.width - 10
+                        height: parent.height
+                        anchors.left: parent.left
+                        anchors.leftMargin: 0
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+
+                        onEntered: parent.color = "#5B7B7A"
+                        onExited: {
+                            if (selector == "statistic") {
+                                parent.color = "#dbdbdb"
+                            }
+                        }
+                        onClicked: {
+                            selector = "abinote"
+                            parent.color = "#a17c6b"
+                            rectangle3.color = "#dbdbdb"
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: rectangle3
+                    width: row.width / 2
+                    height: row.height
+                    color: "#a17c6b"
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 300  // Übergangsdauer in Millisekunden
+                        }
+                    }
+                    radius: 20
+
+                    Text {
+                        id: _text1
+                        text: qsTr("NOTENSTATISTIK")
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: 28
+                        font.bold: true
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+                    MouseArea {
+                        id: mouseArea1
+                        width: parent.width - 10
+                        height: parent.height
+                        anchors.right: parent.right
+                        anchors.rightMargin: 0
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+
+                        onEntered: rectangle3.color = "#5B7B7A"
+                        onExited: {
+                            if (selector == "statistic") {
+                                rectangle3.color = "#a17c6b"
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Connections {
@@ -18,5 +135,6 @@ Item {
         function onSendData(data) {
         }
     }
+
 
 }
