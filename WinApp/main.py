@@ -18,8 +18,6 @@ class Backend(QObject):
     def login(self, school, username, password):
 
         self.loginAttention.emit()
-        
-        print(f"School: {school}, Username: {username}, Password: {password}")
 
         edupage = EdupageAPI()
         edupage.login(username, password, school)

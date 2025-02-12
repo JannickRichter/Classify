@@ -75,12 +75,14 @@ Item {
                         onEntered: parent.color = "#5B7B7A"
                         onExited: {
                             if (selector == "statistic") {
-                                parent.color = "#dbdbdb"
+                                rectangle2.color = "#dbdbdb"
+                            } else if (selector == "abinote") {
+                                rectangle2.color = "#a17c6b"
                             }
                         }
                         onClicked: {
                             selector = "abinote"
-                            parent.color = "#a17c6b"
+                            rectangle2.color = "#a17c6b"
                             rectangle3.color = "#dbdbdb"
                         }
                     }
@@ -121,7 +123,14 @@ Item {
                         onExited: {
                             if (selector == "statistic") {
                                 rectangle3.color = "#a17c6b"
+                            } else if (selector == "abinote") {
+                                rectangle3.color = "#dbdbdb"
                             }
+                        }
+                        onClicked: {
+                            selector = "statistic"
+                            rectangle3.color = "#a17c6b"
+                            rectangle2.color = "#dbdbdb"
                         }
                     }
                 }
