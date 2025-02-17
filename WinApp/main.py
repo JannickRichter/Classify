@@ -29,7 +29,6 @@ class Backend(QObject):
         if edupage.isLoggedIn():
             print("Edupage logged in!")
             self.loginSuccess.emit(True)
-            self.sendData.emit(str(edupage.getAverage()))
         else:
             print("Edupage login failed!")
             self.loginSuccess.emit(False)

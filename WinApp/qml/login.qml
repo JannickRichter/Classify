@@ -221,6 +221,8 @@ Item {
                 busyIndicator.enabled = false
                 busyIndicator.visible = false
                 button.text = "Erneut versuchen"
+            } else {
+                
             }
         }
     }
