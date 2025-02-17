@@ -2,6 +2,9 @@ from edupage_api import Edupage
 from edupage_api.exceptions import BadCredentialsException, CaptchaException
 from edupage_api import Grades
 from edupage_api import Term
+import re
+from collections import defaultdict
+from edupage_api import Grades, Term
 
 class EdupageAPI(Edupage):
     _instance = None  # Singleton-Instanz
@@ -50,19 +53,51 @@ class EdupageAPI(Edupage):
         for grade in grades_instance.get_grades(term=Term.SECOND, year=2023):
             grades.append(f"{grade.subject_name}: {grade.grade_n}")
 
-        return grades
-    
     def getAverage(self):
         if not self.loggedIn:
             print("Not logged in Edupage!")
             return None
-        
-        sum = 0
-        count = 0
-        grades_instance = Grades(self.edupage)  # Erstelle eine Instanz von Grades
-        for grade in grades_instance.get_grades(term=Term.FIRST, year=2024):
-            sum += grade.grade_n
-            count += 1
 
-        return sum / count
+        grades_instance = Grades(self.edupage)  # Edupage Noten-Instanz
+        grades = grades_instance.get_grades(term=Term.FIRST, year=2024)  # Noten abrufen
+
+        subject_grades = defaultdict(list)  # Dictionary für Fächer und Noten
+
+        # Alle Noten nach Fach gruppieren
+        for grade in grades:
+            subject_grades[grade.subject_name].append(grade)
+
+        total_sum = 0  # Gesamtsumme aller Fach-Durchschnitte
+        total_count = 0  # Anzahl der Fächer für den Durchschnitt
+
+        # Durch alle Fächer iterieren
+        for subject, subject_notes in subject_grades.items():
+            normal_grades = []
+            exam_grades = []
+
+            # Noten filtern und in Kursarbeiten & normale Noten unterteilen
+            for note in subject_notes:
+                if re.search(r"\b(ka|KA|Ka|kursarbeit|Kursarbeit)\b", note.title):  # Kursarbeit erkennen
+                    exam_grades.append(note.grade_n)
+                else:
+                    normal_grades.append(note.grade_n)
+
+            # Durchschnitt berechnen
+            if exam_grades:  # Falls Kursarbeit existiert
+                exam_weight = 1 / 3
+                normal_weight = 2 / 3
+
+                exam_avg = sum(exam_grades) / len(exam_grades) if exam_grades else 0
+                normal_avg = sum(normal_grades) / len(normal_grades) if normal_grades else 0
+
+                subject_avg = round((exam_avg * exam_weight) + (normal_avg * normal_weight), 2)
+            else:  # Falls keine Kursarbeit existiert
+                subject_avg = round(sum(normal_grades) / len(normal_grades), 2) if normal_grades else 0
+
+            total_sum += subject_avg
+            total_count += 1
+
+        # Gesamtdurchschnitt berechnen
+        return round(total_sum / total_count, 2) if total_count > 0 else None
+
         
