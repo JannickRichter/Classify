@@ -3,6 +3,8 @@ from edupage_api.exceptions import BadCredentialsException, CaptchaException
 from edupage_api import Grades
 from edupage_api import Term
 import re
+import json
+from datetime import datetime
 from collections import defaultdict
 from edupage_api import Grades, Term
 
@@ -58,26 +60,27 @@ class EdupageAPI(Edupage):
             print("Not logged in Edupage!")
             return None
 
-        grades_instance = Grades(self.edupage)  # Edupage Noten-Instanz
-        grades = grades_instance.get_grades(term=Term.FIRST, year=2024)  # Noten abrufen
+        grades_instance = Grades(self.edupage)
+        grades = grades_instance.get_grades(term=Term.FIRST, year=2024)
 
-        subject_grades = defaultdict(list)  # Dictionary für Fächer und Noten
+        subject_grades = defaultdict(list)
 
-        # Alle Noten nach Fach gruppieren
         for grade in grades:
             subject_grades[grade.subject_name].append(grade)
+
+        print(subject_grades)
 
         total_sum = 0  # Gesamtsumme aller Fach-Durchschnitte
         total_count = 0  # Anzahl der Fächer für den Durchschnitt
 
-        # Durch alle Fächer iterieren
+        # Alle Fächer durchgehen
         for subject, subject_notes in subject_grades.items():
             normal_grades = []
             exam_grades = []
 
-            # Noten filtern und in Kursarbeiten & normale Noten unterteilen
+            # Fächer nach Kursarbeiten filtern
             for note in subject_notes:
-                if re.search(r"\b(ka|KA|Ka|kursarbeit|Kursarbeit)\b", note.title):  # Kursarbeit erkennen
+                if re.search(r"\b(ka|KA|Ka|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title):  # Kursarbeit erkennen
                     exam_grades.append(note.grade_n)
                 else:
                     normal_grades.append(note.grade_n)
@@ -90,14 +93,23 @@ class EdupageAPI(Edupage):
                 exam_avg = sum(exam_grades) / len(exam_grades) if exam_grades else 0
                 normal_avg = sum(normal_grades) / len(normal_grades) if normal_grades else 0
 
-                subject_avg = round((exam_avg * exam_weight) + (normal_avg * normal_weight), 2)
+                subject_avg = round((exam_avg * exam_weight) + (normal_avg * normal_weight), 0)
             else:  # Falls keine Kursarbeit existiert
-                subject_avg = round(sum(normal_grades) / len(normal_grades), 2) if normal_grades else 0
+                subject_avg = round(sum(normal_grades) / len(normal_grades), 0) if normal_grades else 0
 
             total_sum += subject_avg
             total_count += 1
 
         # Gesamtdurchschnitt berechnen
         return round(total_sum / total_count, 2) if total_count > 0 else None
+    
+    def getMarkHistory(self, months: int, year: int, term: Term):
+        if not self.loggedIn:
+            print("Not logged in Edupage!")
+            return None
 
-        
+        grades_instance = Grades(self.edupage)
+        grades = grades_instance.get_grades(term=term, year=year)
+
+        # JSON zurückgeben
+        return json.dumps(results, indent=4)
