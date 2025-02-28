@@ -1,10 +1,8 @@
 import sys
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
-from PySide6.QtCore import QObject, Signal, Slot, QTimer
 from PySide6.QtGui import QIcon
-from edupage_connect import EdupageAPI
-from backend import Backend            
+from backend import Backend
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
