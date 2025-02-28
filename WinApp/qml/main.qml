@@ -18,8 +18,8 @@ Window {
     Connections {
         target: backend
 
-        function onLoginSuccess(success) {
-            if (success) {
+        function onSendData(usage, data) {
+            if (data) {
                 pageLoader.source = "dashboard.qml"
             }
         }

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtCharts
 
 Item {
     width: 1920
@@ -155,10 +156,56 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 radius: 20
-                Text {
-                    text: "Notenstatistik Content"
-                    anchors.centerIn: parent
-                    font.pixelSize: 32
+
+                ChartView {
+                    id: chart
+                    anchors.fill: parent
+                    antialiasing: true
+                    title: "Notenstatistik"
+                    legend.visible: false
+
+                    // Y-Achse: Notendurchschnitt (z. B. von 0 bis 15)
+                    ValueAxis {
+                        id: yAxis
+                        min: 0
+                        max: 15
+                    }
+
+                    // X-Achse: Wochen (Kategorieachse)
+                    CategoryAxis {
+                        id: xAxis
+                        // Optional: Falls du Standardwerte vorab setzen möchtest.
+                    }
+
+                    LineSeries {
+                        id: lineSeries
+                        axisX: xAxis
+                        axisY: yAxis
+                    }
+
+                    Connections {
+                        target: backend
+
+                        function onSendData(usage, data) {
+                            // Prüfen, ob das Signal für das Diagramm gedacht ist:
+                            if (usage === "chart") {
+                                var jsonData = JSON.parse(data)
+                                lineSeries.clear()
+                                // (Falls "categories" nicht unterstützt wird, kann hier alternativ eine neue Achse erstellt werden.)
+                                // Zum Beispiel: xAxis = CategoryAxis { } oder man entfernt alle bisherigen Labels.
+
+                                // Füge für jeden Eintrag einen Datenpunkt hinzu
+                                for (var i = 0; i < jsonData.length; i++) {
+                                    var entry = jsonData[i]
+                                    lineSeries.append(i, entry.average)
+                                    // Füge das Wochenlabel hinzu – das funktioniert, wenn xAxis.append unterstützt wird
+                                    xAxis.append(entry.week, i)
+                                    backend.checkSendData(str(i + ": " + entry.week + " - " + entry.average))
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -178,13 +225,4 @@ Item {
         }
 
     }
-
-    Connections {
-        target: backend
-
-        function onSendData(data) {
-        }
-    }
-
-
 }

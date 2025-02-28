@@ -1,11 +1,13 @@
 from PySide6.QtCore import QObject, Signal, Slot, QTimer
 from edupage_connect import EdupageAPI
+from edupage_api import Term
+import json
 
 class Backend(QObject):
 
     loginAttention = Signal()
     loginSuccess = Signal(bool)
-    sendData = Signal(str)
+    sendData = Signal(str, str)
 
     def __init__(self):
         super().__init__()
@@ -25,6 +27,7 @@ class Backend(QObject):
         if edupage.isLoggedIn():
             print("Edupage logged in!")
             self.loginSuccess.emit(True)
+            self.sendDataToQML("chart", edupage.getMarkHistory(months=3, year=2024, term=Term.SECOND))
         else:
             print("Edupage login failed!")
             self.loginSuccess.emit(False)
@@ -32,3 +35,11 @@ class Backend(QObject):
     @Slot()
     def getMarkStatistic(self):
         print("lol")
+
+    def sendDataToQML(self, usage, data):
+        self.sendData.emit(usage, data)
+        print(data)
+
+    @Slot(str)
+    def checkSendData(self, data):
+        print(data)
