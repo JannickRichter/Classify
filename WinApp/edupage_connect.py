@@ -112,4 +112,4 @@ class EdupageAPI(Edupage):
         grades = grades_instance.get_grades(term=term, year=year)
 
         # JSON zurückgeben
-        return json.dumps(results, indent=4)
+        return json.dumps(results, indent=4) #xxx
