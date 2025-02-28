@@ -131,11 +131,52 @@ Item {
                             selector = "statistic"
                             rectangle3.color = "#a17c6b"
                             rectangle2.color = "#dbdbdb"
+
+                            backend.getMarkStatistic()
                         }
                     }
                 }
             }
         }
+
+        // Loader, der den Inhalt unter der Tab-Leiste anzeigt:
+        Loader {
+            id: tabContent
+            anchors.top: rectangle1.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            sourceComponent: selector === "statistic" ? notenStatistikPage : abiturnotePage
+        }
+
+        // Component für die Notenstatistik-Seite
+        Component {
+            id: notenStatistikPage
+            Rectangle {
+                anchors.fill: parent
+                radius: 20
+                Text {
+                    text: "Notenstatistik Content"
+                    anchors.centerIn: parent
+                    font.pixelSize: 32
+                }
+            }
+        }
+
+        // Component für die Abiturnote-Seite
+        Component {
+            id: abiturnotePage
+            Rectangle {
+                anchors.fill: parent
+                radius: 20
+                Text {
+                    text: "Abiturnote Content"
+                    anchors.centerIn: parent
+                    font.pixelSize: 32
+                }
+            }
+        }
+
     }
 
     Connections {
