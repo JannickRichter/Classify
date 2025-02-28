@@ -109,48 +109,74 @@ class EdupageAPI(Edupage):
             print("Not logged in Edupage!")
             return None
 
-        # Aktuelles Datum und Startdatum berechnen
         now = datetime.now()
         start_date = now - relativedelta(months=months)
 
-        # Alle Noten für das angegebene Halbjahr abrufen
         grades_instance = Grades(self.edupage)
-        grades = grades_instance.get_grades(term=term, year=year)
+        # Alle Noten des aktuellen Halbjahres abrufen und auf den gewünschten Zeitraum filtern
+        current_grades_all = grades_instance.get_grades(term=term, year=year)
+        current_grades = [g for g in current_grades_all if start_date <= g.date <= now]
 
-        # Nur Noten berücksichtigen, die im Zeitraum zwischen start_date und now liegen
-        relevant_grades = [g for g in grades if start_date <= g.date <= now]
+        # Prüfen, ob in den ersten 4 Wochen (28 Tage) des Zeitraums Noten existieren
+        four_weeks_end = start_date + timedelta(days=28)
+        initial_grades = [g for g in current_grades if start_date <= g.date < four_weeks_end]
 
-        # Wochenweise die Notendurchschnitte berechnen
-        week_data = []
-        current_week_start = start_date
-        last_week_average = None
+        output = []
 
-        # Solange bis zum aktuellen Datum iterieren
-        while current_week_start < now:
-            # Bestimme das Ende der aktuellen Woche (7 Tage später)
-            current_week_end = current_week_start + timedelta(days=7)
-            if current_week_end > now:
-                current_week_end = now
-
-            # Finde alle Noten, die in die aktuelle Woche fallen
-            week_grades = [g.grade_n for g in relevant_grades if current_week_start <= g.date < current_week_end]
-
-            # Berechne den Wochendurchschnitt oder übernehme den letzten Wert, wenn keine Note vorliegt
-            if week_grades:
-                week_average = sum(week_grades) / len(week_grades)
+        # Falls in den ersten 4 Wochen keine Noten vorhanden sind, wird der "Fallback" aus dem vorherigen Term gesucht.
+        if not initial_grades:
+            # Bestimme den vorherigen Term gemäß der Vorgabe
+            if term == Term.SECOND:
+                fallback_term = Term.FIRST
+                fallback_year = year
+            elif term == Term.FIRST:
+                fallback_term = Term.SECOND
+                fallback_year = year - 1
             else:
-                week_average = last_week_average if last_week_average is not None else 0
+                fallback_term = None
 
-            last_week_average = week_average
+            fallback_grade_value = None
+            if fallback_term is not None:
+                fallback_grades_all = grades_instance.get_grades(term=fallback_term, year=fallback_year)
+                if fallback_grades_all:
+                    # Letzter Notenwert: der Eintrag mit dem spätesten Datum
+                    fallback_grade = max(fallback_grades_all, key=lambda g: g.date)
+                    fallback_grade_value = fallback_grade.grade_n
 
-            # Füge die Ergebnisse (z.B. mit Datum als Start der Woche) der Liste hinzu
-            week_data.append({
-                "week": current_week_start.strftime("%Y-%m-%d"),
-                "average": round(week_average, 1)
+            # Bestimme den Start der ersten Woche, in der Noten im aktuellen Term vorliegen
+            if current_grades:
+                first_current_date = min(g.date for g in current_grades)
+                # Wir runden auf den Wochenanfang (z. B. Montag)
+                first_current_week = first_current_date - timedelta(days=first_current_date.weekday())
+            else:
+                first_current_week = now  # Falls es im aktuellen Term gar keine Noten gibt, füllen wir den gesamten Zeitraum
+
+            # Fülle für jede Woche vom start_date bis zur ersten aktuellen Note einen Eintrag mit dem Fallback-Notenwert
+            fallback_week_start = start_date
+            while fallback_week_start < first_current_week:
+                if fallback_grade_value is not None:
+                    output.append({
+                        "week": fallback_week_start.strftime("%Y-%m-%d"),
+                        "average": fallback_grade_value
+                    })
+                fallback_week_start += timedelta(days=7)
+
+        # Nun werden die Noten aus dem aktuellen Term verarbeitet.
+        # Dabei gruppieren wir die Noten nach der Woche (z. B. beginnend mit Montag) und berechnen den Durchschnitt.
+        week_grades = defaultdict(list)
+        for g in current_grades:
+            # Bestimme den Wochenanfang (Montag) der Note
+            week_start = (g.date - timedelta(days=g.date.weekday())).date()
+            week_grades[week_start].append(g.grade_n)
+
+        # Für jede Woche, in der Noten vorliegen, wird ein Durchschnitt berechnet und in das Ergebnis aufgenommen.
+        for week_start in sorted(week_grades.keys()):
+            grades_in_week = week_grades[week_start]
+            avg = sum(grades_in_week) / len(grades_in_week)
+            output.append({
+                "week": week_start.strftime("%Y-%m-%d"),
+                "average": round(avg, 1)
             })
 
-            # Zur nächsten Woche wechseln
-            current_week_start = current_week_end
-
-        # Rückgabe als JSON-String, geeignet für ein QML-Liniendiagramm
-        return json.dumps(week_data)
+        # Ausgabe als JSON-String, der sich gut für ein QML-Liniendiagramm eignet
+        return json.dumps(output)
