@@ -158,54 +158,67 @@ Item {
                 radius: 20
 
                 ChartView {
-                    id: chart
+                    id: chartView
                     anchors.fill: parent
                     antialiasing: true
-                    title: "Notenstatistik"
                     legend.visible: false
 
-                    // Y-Achse: Notendurchschnitt (z. B. von 0 bis 15)
+                    // X-Achse: DateTimeAxis zeigt das Datum an (Format z.B. "09 Dez")
+                    DateTimeAxis {
+                        id: dateAxis
+                        format: "dd MMM"
+                        tickCount: 6
+                    }
+
+                    // Y-Achse: ValueAxis von 0 bis 15 mit 16 Ticks, die ganze Zahlen anzeigen
                     ValueAxis {
-                        id: yAxis
+                        id: valueAxis
                         min: 0
                         max: 15
+                        tickCount: 16
+                        labelFormat: "%d"
                     }
 
-                    // X-Achse: Wochen (Kategorieachse)
-                    CategoryAxis {
-                        id: xAxis
-                        // Optional: Falls du Standardwerte vorab setzen möchtest.
-                    }
-
+                    // Linie, die die Datenpunkte verbindet
                     LineSeries {
                         id: lineSeries
-                        axisX: xAxis
-                        axisY: yAxis
+                        axisX: dateAxis
+                        axisY: valueAxis
                     }
+                }
 
-                    Connections {
-                        target: backend
+                // Funktion, die den JSON-String verarbeitet und die Daten in die LineSeries überträgt
+                function processChartData(jsonStr) {
+                    var data = JSON.parse(jsonStr);
+                    lineSeries.clear();
 
-                        function onSendData(usage, data) {
-                            // Prüfen, ob das Signal für das Diagramm gedacht ist:
-                            if (usage === "chart") {
-                                var jsonData = JSON.parse(data)
-                                lineSeries.clear()
-                                // (Falls "categories" nicht unterstützt wird, kann hier alternativ eine neue Achse erstellt werden.)
-                                // Zum Beispiel: xAxis = CategoryAxis { } oder man entfernt alle bisherigen Labels.
+                    var minTime = Number.MAX_VALUE;
+                    var maxTime = 0;
 
-                                // Füge für jeden Eintrag einen Datenpunkt hinzu
-                                for (var i = 0; i < jsonData.length; i++) {
-                                    var entry = jsonData[i]
-                                    lineSeries.append(i, entry.average)
-                                    // Füge das Wochenlabel hinzu – das funktioniert, wenn xAxis.append unterstützt wird
-                                    xAxis.append(entry.week, i)
-                                    backend.checkSendData(str(i + ": " + entry.week + " - " + entry.average))
-                                }
-                            }
+                    for (var i = 0; i < data.length; i++) {
+                        var entry = data[i];
+                        // Konvertiere das Datum (Format "YYYY-MM-DD") in einen Zeitstempel
+                        var timeValue = new Date(entry.week).getTime();
+                        lineSeries.append(timeValue, entry.average);
+                        if (timeValue < minTime)
+                            minTime = timeValue;
+                        if (timeValue > maxTime)
+                            maxTime = timeValue;
+                    }
+                    // Setze den Bereich der X-Achse basierend auf den Daten
+                    dateAxis.min = new Date(minTime);
+                    dateAxis.max = new Date(maxTime);
+                }
+
+                // Connections-Element, das das Signal vom Python-Backend empfängt
+                Connections {
+                    target: backend
+                    function onSendData(usage, data) {
+                        // Hier gehen wir davon aus, dass das Signal so definiert ist, dass usage und data als Strings übertragen werden.
+                        if (usage == "chart") {
+                            processChartData(data);
                         }
                     }
-
                 }
             }
         }

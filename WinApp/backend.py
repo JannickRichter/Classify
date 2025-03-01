@@ -27,7 +27,7 @@ class Backend(QObject):
         if edupage.isLoggedIn():
             print("Edupage logged in!")
             self.loginSuccess.emit(True)
-            self.sendDataToQML("chart", edupage.getMarkHistory(months=3, year=2024, term=Term.SECOND))
+            QTimer.singleShot(400, lambda: self.sendDataToQML("chart", edupage.getMarkHistory(months=3, year=2024, term=Term.SECOND)))
         else:
             print("Edupage login failed!")
             self.loginSuccess.emit(False)
@@ -38,8 +38,3 @@ class Backend(QObject):
 
     def sendDataToQML(self, usage, data):
         self.sendData.emit(usage, data)
-        print(data)
-
-    @Slot(str)
-    def checkSendData(self, data):
-        print(data)
