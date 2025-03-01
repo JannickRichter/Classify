@@ -276,8 +276,10 @@ Item {
                             onValueChanged: {
                                 _text3.text = slider.value;
                             }
-                            onSliderReleased: {
-                                backend.getMarkStatistic(parseInt(Math.round(value, 0)))
+                            onPressedChanged: {
+                                if (!pressed) {
+                                    backend.getMarkStatistic(parseInt(Math.round(value, 0)))
+                                }
                             }
                         }
 
