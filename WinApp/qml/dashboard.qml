@@ -133,7 +133,7 @@ Item {
                             rectangle3.color = "#a17c6b"
                             rectangle2.color = "#dbdbdb"
 
-                            backend.getMarkStatistic()
+                            backend.getMarkStatistic(3)
                         }
                     }
                 }
@@ -141,6 +141,7 @@ Item {
         }
 
         // Loader, der den Inhalt unter der Tab-Leiste anzeigt:
+
         Loader {
             id: tabContent
             anchors.top: rectangle1.bottom
@@ -151,6 +152,7 @@ Item {
         }
 
         // Component für die Notenstatistik-Seite
+
         Component {
             id: notenStatistikPage
             Rectangle {
@@ -159,7 +161,14 @@ Item {
 
                 ChartView {
                     id: chartView
-                    anchors.fill: parent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: row1.top
+                    anchors.leftMargin: 30
+                    anchors.rightMargin: 30
+                    anchors.topMargin: 30
+                    anchors.bottomMargin: 30
                     antialiasing: true
                     legend.visible: false
 
@@ -167,7 +176,7 @@ Item {
                     DateTimeAxis {
                         id: dateAxis
                         format: "dd MMM"
-                        tickCount: 6
+                        tickCount: 10
                     }
 
                     // Y-Achse: ValueAxis von 0 bis 15 mit 16 Ticks, die ganze Zahlen anzeigen
@@ -184,6 +193,7 @@ Item {
                         id: lineSeries
                         axisX: dateAxis
                         axisY: valueAxis
+                        color: "#a17c6b"
                     }
                 }
 
@@ -220,6 +230,119 @@ Item {
                         }
                     }
                 }
+
+                Row {
+                    id: row1
+                    x: 30
+                    y: 710
+                    height: 70
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.leftMargin: 30
+                    anchors.rightMargin: 30
+                    anchors.bottomMargin: 30
+
+                    Item {
+                        id: row2
+                        width: parent.width / 2
+                        height: parent.height
+                        clip: false
+
+                        Text {
+                            id: _text2
+                            text: qsTr("Zeitrahmen:")
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            font.pixelSize: 24
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignTop
+                        }
+
+                        Slider {
+                            id: slider
+                            value: 3
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: _text2.right
+                            anchors.right: _text3.left
+                            anchors.leftMargin: 30
+                            anchors.rightMargin: 30
+                            snapMode: RangeSlider.SnapOnRelease
+                            stepSize: 1
+                            to: 12
+                            from: 1
+
+                            onValueChanged: {
+                                _text3.text = slider.value;
+                            }
+                            onSliderReleased: {
+                                backend.getMarkStatistic(parseInt(Math.round(value, 0)))
+                            }
+                        }
+
+                        Text {
+                            id: _text3
+                            text: qsTr("3")
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+                            anchors.rightMargin: 30
+                            font.pixelSize: 24
+                        }
+                    }
+
+                    Item {
+                        id: row3
+                        width: parent.width / 2
+                        height: parent.height
+
+                        Text {
+                            id: _text4
+                            text: qsTr("Notendurchschnitt:")
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 30
+                            font.pixelSize: 24
+                        }
+
+                        Item {
+                            id: _item
+                            anchors.left: _text4.right
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.leftMargin: 0
+                            anchors.rightMargin: 0
+                            anchors.topMargin: 0
+                            anchors.bottomMargin: 0
+
+                            Rectangle {
+                                id: rectangle4
+                                x: 64
+                                y: 8
+                                width: 250
+                                color: "#a17c6b"
+                                radius: 20
+                                border.width: 0
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.topMargin: 8
+                                anchors.bottomMargin: 8
+                                anchors.horizontalCenter: parent.horizontalCenter
+
+                                Text {
+                                    id: _text5
+                                    text: qsTr("-")
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    font.pixelSize: 28
+                                    font.bold: true
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                            }
+                        }
+
+                    }
+                }
             }
         }
 
@@ -236,6 +359,8 @@ Item {
                 }
             }
         }
+
+
 
     }
 }
