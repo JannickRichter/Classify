@@ -364,7 +364,7 @@ Item {
                             processChartData(data);
                         } else if (usage == "average") {
                             if (data) {
-                                _text5.text = data + " NP";
+                                _text5.text = data;
                             }
                         }
                     }
