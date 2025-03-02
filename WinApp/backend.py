@@ -27,6 +27,7 @@ class Backend(QObject):
             print("Edupage logged in!")
             self.loginSuccess.emit(True)
             QTimer.singleShot(400, lambda: self.sendDataToQML("chart", edupage.getMarkHistory(months=3, year=2024, term=Term.SECOND)))
+            QTimer.singleShot(400, lambda: self.sendDataToQML("average", str(edupage.getAverage(2024, Term.SECOND))))
         else:
             print("Edupage login failed!")
             self.loginSuccess.emit(False)
@@ -38,3 +39,14 @@ class Backend(QObject):
 
     def sendDataToQML(self, usage, data):
         self.sendData.emit(usage, data)
+
+    @Slot(str)
+    def getAverage(self, selection):
+        edupage = EdupageAPI()
+        print(selection)
+        year = int(selection.split("/")[0])
+        term = int(selection.split("/")[1])
+        if term == 1:
+            self.sendDataToQML("average", str(edupage.getAverage(year, Term.FIRST)))
+        elif term == 2:
+            self.sendDataToQML("average", str(edupage.getAverage(year, Term.SECOND)))

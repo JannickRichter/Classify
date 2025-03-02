@@ -197,40 +197,6 @@ Item {
                     }
                 }
 
-                // Funktion, die den JSON-String verarbeitet und die Daten in die LineSeries überträgt
-                function processChartData(jsonStr) {
-                    var data = JSON.parse(jsonStr);
-                    lineSeries.clear();
-
-                    var minTime = Number.MAX_VALUE;
-                    var maxTime = 0;
-
-                    for (var i = 0; i < data.length; i++) {
-                        var entry = data[i];
-                        // Konvertiere das Datum (Format "YYYY-MM-DD") in einen Zeitstempel
-                        var timeValue = new Date(entry.week).getTime();
-                        lineSeries.append(timeValue, entry.average);
-                        if (timeValue < minTime)
-                            minTime = timeValue;
-                        if (timeValue > maxTime)
-                            maxTime = timeValue;
-                    }
-                    // Setze den Bereich der X-Achse basierend auf den Daten
-                    dateAxis.min = new Date(minTime);
-                    dateAxis.max = new Date(maxTime);
-                }
-
-                // Connections-Element, das das Signal vom Python-Backend empfängt
-                Connections {
-                    target: backend
-                    function onSendData(usage, data) {
-                        // Hier gehen wir davon aus, dass das Signal so definiert ist, dass usage und data als Strings übertragen werden.
-                        if (usage == "chart") {
-                            processChartData(data);
-                        }
-                    }
-                }
-
                 Row {
                     id: row1
                     x: 30
@@ -322,15 +288,16 @@ Item {
                                 id: rectangle4
                                 x: 64
                                 y: 8
-                                width: 250
+                                width: background1.width / 13
                                 color: "#a17c6b"
                                 radius: 20
                                 border.width: 0
+                                anchors.right: parent.right
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
+                                anchors.rightMargin: 0
                                 anchors.topMargin: 8
                                 anchors.bottomMargin: 8
-                                anchors.horizontalCenter: parent.horizontalCenter
 
                                 Text {
                                     id: _text5
@@ -341,8 +308,64 @@ Item {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                 }
                             }
+
+                            ComboBox {
+                                id: comboBox
+                                x: 35
+                                y: 7
+                                width: background1.width / 12
+                                anchors.right: rectangle4.left
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.rightMargin: background1.width / 12
+                                anchors.topMargin: 8
+                                anchors.bottomMargin: 8
+                                model: ["2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2", "2021/1", "2020/2", "2020/1", "2019/2", "2019/1"]
+                                font.pointSize: 20
+                                onCurrentIndexChanged: {
+                                    backend.getAverage(comboBox.currentText);
+                                }
+                            }
                         }
 
+                    }
+                }
+
+                // Funktion, die den JSON-String verarbeitet und die Daten in die LineSeries überträgt
+                function processChartData(jsonStr) {
+                    var data = JSON.parse(jsonStr);
+                    lineSeries.clear();
+
+                    var minTime = Number.MAX_VALUE;
+                    var maxTime = 0;
+
+                    for (var i = 0; i < data.length; i++) {
+                        var entry = data[i];
+                        // Konvertiere das Datum (Format "YYYY-MM-DD") in einen Zeitstempel
+                        var timeValue = new Date(entry.week).getTime();
+                        lineSeries.append(timeValue, entry.average);
+                        if (timeValue < minTime)
+                            minTime = timeValue;
+                        if (timeValue > maxTime)
+                            maxTime = timeValue;
+                    }
+                    // Setze den Bereich der X-Achse basierend auf den Daten
+                    dateAxis.min = new Date(minTime);
+                    dateAxis.max = new Date(maxTime);
+                }
+
+                // Connections-Element, das das Signal vom Python-Backend empfängt
+                Connections {
+                    target: backend
+                    function onSendData(usage, data) {
+                        // Hier gehen wir davon aus, dass das Signal so definiert ist, dass usage und data als Strings übertragen werden.
+                        if (usage == "chart") {
+                            processChartData(data);
+                        } else if (usage == "average") {
+                            if (data) {
+                                _text5.text = data + " NP";
+                            }
+                        }
                     }
                 }
             }

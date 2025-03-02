@@ -7,7 +7,7 @@ edupage = EdupageAPI()
 edupage.login("jannickrichter@web.de", "JRNinjago2007!?", "duden-gymn")
 
 print(edupage.isLoggedIn())
-print(edupage.getMarkHistory(8, 2024, Term.SECOND))
+print(edupage.getAverage(2024, Term.FIRST))
 
 
 """subjects = Subjects(edupage.edupage)

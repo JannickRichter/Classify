@@ -50,26 +50,19 @@ class EdupageAPI(Edupage):
         if not self.loggedIn:
             print("Not logged in Edupage!")
             return None
-        
-        grades = []
-        grades_instance = Grades(self.edupage)  # Erstelle eine Instanz von Grades
-        for grade in grades_instance.get_grades(term=Term.SECOND, year=2023):
-            grades.append(f"{grade.subject_name}: {grade.grade_n}")
 
-    def getAverage(self):
+    def getAverage(self, year: int, term: Term):
         if not self.loggedIn:
             print("Not logged in Edupage!")
             return None
 
         grades_instance = Grades(self.edupage)
-        grades = grades_instance.get_grades(term=Term.FIRST, year=2024)
+        grades = grades_instance.get_grades(term=term, year=year)
 
         subject_grades = defaultdict(list)
 
         for grade in grades:
             subject_grades[grade.subject_name].append(grade)
-
-        print(subject_grades)
 
         total_sum = 0  # Gesamtsumme aller Fach-Durchschnitte
         total_count = 0  # Anzahl der Fächer für den Durchschnitt
@@ -113,63 +106,37 @@ class EdupageAPI(Edupage):
         start_date = now - relativedelta(months=months)
 
         grades_instance = Grades(self.edupage)
-        # Alle Noten des aktuellen Halbjahres abrufen und auf den gewünschten Zeitraum filtern
-        current_grades_all = grades_instance.get_grades(term=term, year=year)
-        current_grades = [g for g in current_grades_all if start_date <= g.date <= now]
+        
+        # Notendaten des aktuellen Terms abrufen
+        current_grades = grades_instance.get_grades(term=term, year=year)
+        
+        # Bestimme die beiden vorherigen Schulhalbjahre (Fallback) abhängig vom aktuellen Term
+        if term == Term.SECOND:
+            fallback_term1, fallback_year1 = Term.FIRST, year
+            fallback_term2, fallback_year2 = Term.SECOND, year - 1
+        elif term == Term.FIRST:
+            fallback_term1, fallback_year1 = Term.SECOND, year - 1
+            fallback_term2, fallback_year2 = Term.FIRST, year - 1
+        else:
+            fallback_term1 = fallback_term2 = None
 
-        # Prüfen, ob in den ersten 4 Wochen (28 Tage) des Zeitraums Noten existieren
-        four_weeks_end = start_date + timedelta(days=28)
-        initial_grades = [g for g in current_grades if start_date <= g.date < four_weeks_end]
+        fallback_grades1 = grades_instance.get_grades(term=fallback_term1, year=fallback_year1) if fallback_term1 is not None else []
+        fallback_grades2 = grades_instance.get_grades(term=fallback_term2, year=fallback_year2) if fallback_term2 is not None else []
+        
+        # Alle Notendaten zusammenführen
+        all_grades = current_grades + fallback_grades1 + fallback_grades2
 
-        output = []
+        # Filtere Noten, die im Zeitraum [start_date, now] liegen
+        filtered_grades = [g for g in all_grades if start_date <= g.date <= now]
 
-        # Falls in den ersten 4 Wochen keine Noten vorhanden sind, wird der "Fallback" aus dem vorherigen Term gesucht.
-        if not initial_grades:
-            # Bestimme den vorherigen Term gemäß der Vorgabe
-            if term == Term.SECOND:
-                fallback_term = Term.FIRST
-                fallback_year = year
-            elif term == Term.FIRST:
-                fallback_term = Term.SECOND
-                fallback_year = year - 1
-            else:
-                fallback_term = None
-
-            fallback_grade_value = None
-            if fallback_term is not None:
-                fallback_grades_all = grades_instance.get_grades(term=fallback_term, year=fallback_year)
-                if fallback_grades_all:
-                    # Letzter Notenwert: der Eintrag mit dem spätesten Datum
-                    fallback_grade = max(fallback_grades_all, key=lambda g: g.date)
-                    fallback_grade_value = fallback_grade.grade_n
-
-            # Bestimme den Start der ersten Woche, in der Noten im aktuellen Term vorliegen
-            if current_grades:
-                first_current_date = min(g.date for g in current_grades)
-                # Wir runden auf den Wochenanfang (z. B. Montag)
-                first_current_week = first_current_date - timedelta(days=first_current_date.weekday())
-            else:
-                first_current_week = now  # Falls es im aktuellen Term gar keine Noten gibt, füllen wir den gesamten Zeitraum
-
-            # Fülle für jede Woche vom start_date bis zur ersten aktuellen Note einen Eintrag mit dem Fallback-Notenwert
-            fallback_week_start = start_date
-            while fallback_week_start < first_current_week:
-                if fallback_grade_value is not None:
-                    output.append({
-                        "week": fallback_week_start.strftime("%Y-%m-%d"),
-                        "average": fallback_grade_value
-                    })
-                fallback_week_start += timedelta(days=7)
-
-        # Nun werden die Noten aus dem aktuellen Term verarbeitet.
-        # Dabei gruppieren wir die Noten nach der Woche (z. B. beginnend mit Montag) und berechnen den Durchschnitt.
+        # Gruppiere die Noten nach Kalenderwoche (Wochenstart: Montag)
         week_grades = defaultdict(list)
-        for g in current_grades:
-            # Bestimme den Wochenanfang (Montag) der Note
+        for g in filtered_grades:
             week_start = (g.date - timedelta(days=g.date.weekday())).date()
             week_grades[week_start].append(g.grade_n)
 
-        # Für jede Woche, in der Noten vorliegen, wird ein Durchschnitt berechnet und in das Ergebnis aufgenommen.
+        output = []
+        # Berechne pro Woche den Durchschnitt und füge nur Wochen mit Noten ein
         for week_start in sorted(week_grades.keys()):
             grades_in_week = week_grades[week_start]
             avg = sum(grades_in_week) / len(grades_in_week)
@@ -178,5 +145,5 @@ class EdupageAPI(Edupage):
                 "average": round(avg, 1)
             })
 
-        # Ausgabe als JSON-String, der sich gut für ein QML-Liniendiagramm eignet
+        # Ausgabe als JSON-String, geeignet für z. B. ein QML-Liniendiagramm
         return json.dumps(output)
