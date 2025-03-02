@@ -43,7 +43,6 @@ class Backend(QObject):
     @Slot(str)
     def getAverage(self, selection):
         edupage = EdupageAPI()
-        print(selection)
         year = int(selection.split("/")[0])
         term = int(selection.split("/")[1])
         if term == 1:

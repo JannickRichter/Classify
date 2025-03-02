@@ -322,10 +322,11 @@ Item {
                                 anchors.bottomMargin: 8
                                 model: ["2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2", "2021/1", "2020/2", "2020/1", "2019/2", "2019/1"]
                                 font.pointSize: 20
-                                onCurrentIndexChanged: {
+                                onActivated: {
                                     backend.getAverage(comboBox.currentText);
                                 }
                             }
+
                         }
 
                     }
