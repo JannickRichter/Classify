@@ -197,7 +197,7 @@ Item {
                     }
                 }
 
-                Row {
+                Item {
                     id: row1
                     x: 30
                     y: 710
@@ -209,10 +209,139 @@ Item {
                     anchors.rightMargin: 30
                     anchors.bottomMargin: 30
 
+
+
+                    Rectangle {
+                        id: rectangle6
+                        width: 3 * parent.width / 8
+                        color: "#e0e0e0"
+                        radius: 20
+                        anchors.left: row2.right
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.leftMargin: 0
+                        anchors.topMargin: 0
+                        anchors.bottomMargin: 0
+
+                        Text {
+                            id: _text4
+                            x: 1086
+                            y: 19
+                            text: qsTr("Notendurchschnitt:")
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 15
+                            font.pixelSize: 24
+                        }
+
+                        Item {
+                            id: _item
+                            x: 1690
+                            y: 0
+                            anchors.left: _text4.right
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.leftMargin: 0
+                            anchors.rightMargin: 0
+                            anchors.topMargin: 0
+                            anchors.bottomMargin: 0
+
+                            Rectangle {
+                                id: rectangle4
+                                x: 64
+                                y: 8
+                                width: background1.width / 13
+                                color: "#a17c6b"
+                                radius: 15
+                                border.width: 0
+                                anchors.right: parent.right
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.rightMargin: 8
+                                anchors.topMargin: 8
+                                anchors.bottomMargin: 8
+
+                                Text {
+                                    id: _text5
+                                    text: qsTr("-")
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    font.pixelSize: 28
+                                    font.bold: true
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                            }
+
+                            ComboBox {
+                                id: comboBox
+                                y: 7
+                                anchors.left: parent.left
+                                anchors.right: rectangle4.left
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.leftMargin: 30
+                                anchors.rightMargin: 30
+                                anchors.topMargin: 8
+                                anchors.bottomMargin: 8
+                                model: ["2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2", "2021/1", "2020/2", "2020/1", "2019/2", "2019/1"]
+                                font.pointSize: 20
+                                onActivated: {
+                                    backend.getAverage(comboBox.currentText);
+                                }
+                            }
+
+                        }
+                    }
+
+                    Item {
+                        id: row4
+                        width: 2 * parent.width / 8
+                        height: parent.height
+
+                        Text {
+                            id: _text6
+                            text: qsTr("Schulklasse:")
+                            anchors.verticalCenter: parent.verticalCenter
+                            font.pixelSize: 24
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+
+                        Item {
+                            id: _item1
+                            anchors.left: _text6.right
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.leftMargin: 0
+                            anchors.rightMargin: 0
+                            anchors.topMargin: 0
+                            anchors.bottomMargin: 0
+
+                            ComboBox {
+                                id: comboBox1
+                                y: 8
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.leftMargin: 30
+                                anchors.topMargin: 8
+                                anchors.bottomMargin: 8
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                model: ["12/2", "12/1", "11/2", "11/1", "10/2", "10/1", "9/2", "9/1", "8/2", "8/1", "7/2", "7/1"]
+                                font.pointSize: 20
+                                onActivated: {
+                                    backend.noteClass(comboBox1.currentText);
+                                    backend.getMarkStatistic(0);
+                                }
+                            }
+                        }
+
+                    }
                     Item {
                         id: row2
-                        width: parent.width / 2
+                        width: 3 * parent.width / 8
                         height: parent.height
+                        anchors.left: row4.right
+                        anchors.leftMargin: 0
                         clip: false
 
                         Text {
@@ -220,7 +349,7 @@ Item {
                             text: qsTr("Zeitrahmen:")
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
-                            anchors.leftMargin: 0
+                            anchors.leftMargin: 30
                             font.pixelSize: 24
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignTop
@@ -240,7 +369,7 @@ Item {
                             from: 1
 
                             onValueChanged: {
-                                _text3.text = slider.value;
+                                _text3.text = slider.value + " Monat(e)";
                             }
                             onPressedChanged: {
                                 if (!pressed) {
@@ -251,7 +380,7 @@ Item {
 
                         Text {
                             id: _text3
-                            text: qsTr("3")
+                            text: qsTr("3 Monat(e)")
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right
                             anchors.rightMargin: 30
@@ -259,77 +388,6 @@ Item {
                         }
                     }
 
-                    Item {
-                        id: row3
-                        width: parent.width / 2
-                        height: parent.height
-
-                        Text {
-                            id: _text4
-                            text: qsTr("Notendurchschnitt:")
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                            anchors.leftMargin: 30
-                            font.pixelSize: 24
-                        }
-
-                        Item {
-                            id: _item
-                            anchors.left: _text4.right
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            anchors.leftMargin: 0
-                            anchors.rightMargin: 0
-                            anchors.topMargin: 0
-                            anchors.bottomMargin: 0
-
-                            Rectangle {
-                                id: rectangle4
-                                x: 64
-                                y: 8
-                                width: background1.width / 13
-                                color: "#a17c6b"
-                                radius: 20
-                                border.width: 0
-                                anchors.right: parent.right
-                                anchors.top: parent.top
-                                anchors.bottom: parent.bottom
-                                anchors.rightMargin: 0
-                                anchors.topMargin: 8
-                                anchors.bottomMargin: 8
-
-                                Text {
-                                    id: _text5
-                                    text: qsTr("-")
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    font.pixelSize: 28
-                                    font.bold: true
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-                            }
-
-                            ComboBox {
-                                id: comboBox
-                                x: 35
-                                y: 7
-                                width: background1.width / 12
-                                anchors.right: rectangle4.left
-                                anchors.top: parent.top
-                                anchors.bottom: parent.bottom
-                                anchors.rightMargin: background1.width / 12
-                                anchors.topMargin: 8
-                                anchors.bottomMargin: 8
-                                model: ["2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2", "2021/1", "2020/2", "2020/1", "2019/2", "2019/1"]
-                                font.pointSize: 20
-                                onActivated: {
-                                    backend.getAverage(comboBox.currentText);
-                                }
-                            }
-
-                        }
-
-                    }
                 }
 
                 // Funktion, die den JSON-String verarbeitet und die Daten in die LineSeries überträgt

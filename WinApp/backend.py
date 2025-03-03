@@ -8,6 +8,10 @@ class Backend(QObject):
     loginSuccess = Signal(bool)
     sendData = Signal(str, str)
 
+    schoolClass = 12
+    schoolHalf = Term.SECOND
+    lastMonths = 3
+
     def __init__(self):
         super().__init__()
 
@@ -35,7 +39,11 @@ class Backend(QObject):
     @Slot(int)
     def getMarkStatistic(self, months):
         edupage = EdupageAPI()
-        self.sendDataToQML("chart", edupage.getMarkHistory(months=months, year=2024, term=Term.SECOND))
+        if months == 0:
+            self.sendDataToQML("chart", edupage.getMarkHistory(months=self.lastMonths, year=2024, term=Term.SECOND))
+        else:
+            self.lastMonths = months
+            self.sendDataToQML("chart", edupage.getMarkHistory(months=months, year=2024, term=Term.SECOND))
 
     def sendDataToQML(self, usage, data):
         self.sendData.emit(usage, data)
@@ -49,3 +57,13 @@ class Backend(QObject):
             self.sendDataToQML("average", str(edupage.getAverage(year, Term.FIRST)))
         elif term == 2:
             self.sendDataToQML("average", str(edupage.getAverage(year, Term.SECOND)))
+
+    @Slot(str)
+    def noteClass(self, selection):
+        self.schoolClass = int(selection.split("/")[0])
+        self.schoolHalf = Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND
+
+        if self.schoolClass == 12 or self.schoolClass == 11:
+            self.sendDataToQML("chart_scale", "6")
+        else:
+            self.sendDataToQML("chart_scale", "15")
