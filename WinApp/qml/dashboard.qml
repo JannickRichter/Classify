@@ -424,6 +424,11 @@ Item {
                             if (data) {
                                 _text5.text = data;
                             }
+                        } else if (usage == "chart_scale") {
+                            if (data) {
+                                valueAxis.tickCount = parseInt(data);
+                                valueAxis.max = parseInt(data);
+                            }
                         }
                     }
                 }
