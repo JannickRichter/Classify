@@ -46,12 +46,7 @@ class EdupageAPI(Edupage):
     def isLoggedIn(self):
         return self.loggedIn
 
-    # Abidurchschnitt berechnen
-    def getAbiGrade(self):
-        if not self.loggedIn:
-            print("Not logged in Edupage!")
-            return None
-    def getAbiGrade(self, current_school_year: int, current_term: int):
+    def getAbiGrade(self, current_school_year: int, current_term: Term):
         if not self.loggedIn: # Ist Benutzer eingelogt?
             print("Not logged in Edupage!")
             return None
@@ -180,41 +175,59 @@ class EdupageAPI(Edupage):
 
         subject_grades = defaultdict(list)
 
+        # Sammle alle Noten pro Fach
         for grade in grades:
             subject_grades[grade.subject_name].append(grade)
 
-        total_sum = 0  # Gesamtsumme der Fach-Durchschnitte
-        total_count = 0  # Anzahl Fächer
+        total_sum = 0  # Summe der Fach-Durchschnitte
+        total_count = 0  # Anzahl der Fächer
 
-        # Alle Fächer durchgehen
         for subject, subject_notes in subject_grades.items():
             normal_grades = []
             exam_grades = []
 
-            # nach Kursarbeiten filtern
             for note in subject_notes:
-                if re.search(r"\b(ka|KA|Ka|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title):  # Kursarbeit erkennen
-                    exam_grades.append(note.grade_n)
+                # Versuche, den Wert als float zu interpretieren
+                # Falls dies scheitert, setze eine alternative Zahl (z.B. 0 oder ignore)
+                try:
+                    value = float(note.grade_n)
+                except (ValueError, TypeError):
+                    # Wenn das Notenfeld leer oder kein Float ist,
+                    # kannst du es wahlweise ignorieren oder als 0.0 setzen
+                    value = 0.0
+
+                # Test auf Kursarbeit / Klausur
+                if re.search(r"\b(ka|KA|Ka|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title):
+                    exam_grades.append(value)
                 else:
-                    normal_grades.append(note.grade_n)
+                    normal_grades.append(value)
 
             # Durchschnitt berechnen
-            if exam_grades:  # Falls Kursarbeit existiert
+            if exam_grades:  # Falls es Kursarbeiten gibt
                 exam_weight = 1 / 3
                 normal_weight = 2 / 3
 
-                exam_avg = sum(exam_grades) / len(exam_grades) if exam_grades else 0
-                normal_avg = sum(normal_grades) / len(normal_grades) if normal_grades else 0
+                exam_avg = sum(exam_grades) / len(exam_grades) if len(exam_grades) > 0 else 0
+                normal_avg = sum(normal_grades) / len(normal_grades) if len(normal_grades) > 0 else 0
 
-                subject_avg = round((exam_avg * exam_weight) + (normal_avg * normal_weight), 0)
-            else:  # Falls keine Kursarbeit existiert
-                subject_avg = round(sum(normal_grades) / len(normal_grades), 0) if normal_grades else 0
+                subject_avg = (exam_avg * exam_weight) + (normal_avg * normal_weight)
+                subject_avg = round(subject_avg, 0)
+            else:
+                # Falls keine Kursarbeit existiert
+                if len(normal_grades) > 0:
+                    subject_avg = round(sum(normal_grades) / len(normal_grades), 0)
+                else:
+                    subject_avg = 0
 
             total_sum += subject_avg
             total_count += 1
 
-        # Gesamtdurchschnitt berechnen
-        return round(total_sum / total_count, 2) if total_count > 0 else None
+        # Gesamtdurchschnitt über alle Fächer
+        if total_count > 0:
+            return round(total_sum / total_count, 2)
+        else:
+            return None
+
     
     # Notenverlauf als JSON String (Verlauf) in Abhängigkeit von aktuellem Schuljahr, Halbjahr und den einzurechnenden Monaten
     def getMarkHistory(self, months: int, year: int, term: Term):
@@ -286,9 +299,7 @@ if edupage_instance.isLoggedIn():
     # Notenberechnung starten
     result = edupage_instance.getAbiGrade(current_school_year, current_term)
 
-    # Ergebnis ausgeben
-    import pprint
-    pprint.pprint(result)
+    print(result)
 else:
     print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")
 
