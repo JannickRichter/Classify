@@ -73,7 +73,7 @@ class EdupageAPI(Edupage):
                 total_grades = sum(len(notes) for notes in subject_grades.values())  # Gesamtanzahl der Noten
                 total_subjects = len(subject_grades)  # Anzahl der Fächer
 
-                if total_grades < 3 * total_subjects:
+                if total_grades < 2 * total_subjects:
                     print(f"Nicht genügend Noten für {year} {term} vorhanden.")
                     continue  # Halbjahr wird übersprungen
 
@@ -301,9 +301,9 @@ class EdupageAPI(Edupage):
 edupage_instance = EdupageAPI()
 
 # Mit Benutzerdaten anmelden (ersetze durch echte Daten)
-username = "ErikThrum"
-password = "1Hans!!!"
-school = "duden-gymn"
+username = ""
+password = ""
+school = ""
 edupage_instance.login(username, password, school)
 
 # Falls erfolgreich eingeloggt, getAbiGrade ausführen
