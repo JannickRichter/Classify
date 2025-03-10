@@ -1,5 +1,8 @@
 from edupage_api import Edupage
 from edupage_api.exceptions import BadCredentialsException, CaptchaException
+from edupage_api import Grades
+from edupage_api import Term
+import math
 import re
 import json
 from datetime import datetime, timedelta
@@ -48,6 +51,110 @@ class EdupageAPI(Edupage):
         if not self.loggedIn:
             print("Not logged in Edupage!")
             return None
+    def getAbiGrade(self, current_school_year: int, current_term: int):
+        if not self.loggedIn: # Ist Benutzer eingelogt?
+            print("Not logged in Edupage!")
+            return None
+        
+        final_grades = defaultdict(list)  # Speichert alle Noten für jedes Fach
+
+        # BERARBEITEN MIT JANNICK
+        # Hier muss nochmal eine Bearbeitung stattfinden. 
+        start_year = current_school_year - 1  # 11. Klasse beginnt ein Jahr vor der aktuellen Eingabe
+        end_year = current_school_year  # 12. Klasse endet im aktuellen Schuljahr
+
+        for year in range(start_year, end_year + 1):  # Durchläuft 11. und 12. Klasse
+            for term in [Term.FIRST, Term.SECOND]:  # Beide Halbjahre berücksichtigen
+                grades_instance = Grades(self.edupage)
+                grades = grades_instance.get_grades(term=term, year=year)
+
+                subject_grades = defaultdict(list)
+
+                # Noten nach Fächern gruppieren
+                for grade in grades:
+                    subject_grades[grade.subject_name].append(grade)
+
+                # Bedingung: Sind genügend Noten für das Halbjahr vorhanden?
+                total_grades = sum(len(notes) for notes in subject_grades.values())  # Gesamtanzahl der Noten
+                total_subjects = len(subject_grades)  # Anzahl der Fächer
+
+                if total_grades < 3 * total_subjects:
+                    print(f"Nicht genügend Noten für {year} {term} vorhanden.")
+                    continue  # Halbjahr wird übersprungen
+
+                # Berechnung der Noten
+                for subject, subject_notes in subject_grades.items():
+                    normal_grades = []
+                    exam_grades = []
+
+                    # Fächer nach Kursarbeiten filtern
+                    for note in subject_notes:
+                        if re.search(r"\b(ka|KA|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title):  
+                            exam_grades.append(note.grade_n)  # Kursarbeiten speichern
+                        else:
+                            normal_grades.append(note.grade_n)  # Normale Noten speichern
+
+                    # Gewichtung Kursarbeiten nur für Leistungskurse (Fächerkürzel in Großbuchstaben)
+                    if subject.isupper() and exam_grades:  # Falls Fach großgeschrieben ist und Kursarbeiten existieren
+                        exam_weight = 1 / 3
+                        normal_weight = 2 / 3
+                    else:  # Falls es ein Grundkurs ist oder keine Kursarbeiten existieren
+                        exam_weight = 0
+                        normal_weight = 1
+
+                    # Durchschnitt berechnen
+                    exam_avg = sum(exam_grades) / len(exam_grades) if exam_grades else 0
+                    normal_avg = sum(normal_grades) / len(normal_grades) if normal_grades else 0
+
+                    subject_avg = (exam_avg * exam_weight) + (normal_avg * normal_weight)
+
+                    # Note auf ganze Zahl runden (ab ,5 aufrunden)
+                    rounded_avg = math.ceil(subject_avg) if subject_avg % 1 >= 0.5 else round(subject_avg)
+
+                    # Speicherung aller Noten für das Fach (mit Edupage-Namen)
+                    final_grades[subject].append(rounded_avg)
+
+        # Sicherstellen, dass jedes Fach genau 4 Halbjahresnoten hat
+        for subject, term_dict in final_grades.items():
+            all_grades = term_dict
+
+            while len(all_grades) < 4:
+                avg = sum(all_grades) / len(all_grades)  # Durchschnitt der vorhandenen Noten berechnen
+                all_grades.append(round(avg))  # Fehlende Noten mit dem gerundeten Durchschnitt ersetzen
+
+            # Noten wieder pro Halbjahr aufteilen
+            final_grades[subject] = dict(zip(sorted(term_dict.keys()), all_grades))
+
+        # Noten streichen für Grundkurse (kleines Fächerkürzel)
+        to_remove = 4  # 4 Noten dürfen gestrichen werden
+        removed_per_term = defaultdict(int)  # Speichert, wie viele Noten pro Halbjahr entfernt wurden
+
+        # Liste der Grundkurse filtern (kleines Fächerkürzel)
+        grundkurse = {subject: grades for subject, grades in final_grades.items() if subject.islower()}
+
+        # Schlechte Noten in Grundkursen streichen
+        for subject, term_grades in sorted(grundkurse.items(), key=lambda x: min(x[1].values()), reverse=True):
+            if to_remove <= 0:
+                break # wenn bereits 4 Noten gestrichen wurden
+
+            sorted_terms = sorted(term_grades.items(), key=lambda x: x[1])  # Sortieren nach schlechtester Note
+
+            removed_count = 0  # Zähler für dieses Fach
+            for term_year, grade in sorted_terms:
+                if removed_count < 2 and to_remove > 0 and removed_per_term[term_year] == 0:
+                    del final_grades[subject][term_year]  # Note entfernen
+                    removed_per_term[term_year] += 1  # Halbjahr als gestrichen markieren
+                    removed_count += 1
+                    to_remove -= 1
+
+                if to_remove <= 0:
+                    break
+
+        return final_grades
+    
+
+        
+
 
     # Durchschnitt in Abhängigkeit von Jahr und Halbjahr berechnen
     def getAverage(self, year: int, term: Term):
@@ -147,3 +254,28 @@ class EdupageAPI(Edupage):
 
         # Ausgabe als JSON-String für QML Diagramm
         return json.dumps(output)
+    
+
+# Objekt der EdupageAPI-Klasse erstellen
+edupage_instance = EdupageAPI()
+
+# Mit Benutzerdaten anmelden (ersetze durch echte Daten)
+username = "ErikThrum"
+password = "1Hans!!!"
+school = "duden-gymn"
+edupage_instance.login(username, password, school)
+
+# Falls erfolgreich eingeloggt, getAbiGrade ausführen
+if edupage_instance.isLoggedIn():
+    current_school_year = 2024  # Beispiel: aktuelles Schuljahr
+    current_term = Term.FIRST  # Beispiel: 1. Halbjahr
+
+    # Notenberechnung starten
+    result = edupage_instance.getAbiGrade(current_school_year, current_term)
+
+    # Ergebnis ausgeben
+    import pprint
+    pprint.pprint(result)
+else:
+    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")
+
