@@ -56,7 +56,7 @@ class EdupageAPI(Edupage):
             print("Not logged in Edupage!")
             return None
         
-        final_grades = defaultdict(list)  # Speichert alle Noten für jedes Fach
+        final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         # BERARBEITEN MIT JANNICK
         # Hier muss nochmal eine Bearbeitung stattfinden. 
@@ -78,7 +78,7 @@ class EdupageAPI(Edupage):
                 total_grades = sum(len(notes) for notes in subject_grades.values())  # Gesamtanzahl der Noten
                 total_subjects = len(subject_grades)  # Anzahl der Fächer
 
-                if total_grades < 3 * total_subjects:
+                if total_grades < 2 * total_subjects:
                     print(f"Nicht genügend Noten für {year} {term} vorhanden.")
                     continue  # Halbjahr wird übersprungen
 
@@ -112,18 +112,18 @@ class EdupageAPI(Edupage):
                     rounded_avg = math.ceil(subject_avg) if subject_avg % 1 >= 0.5 else round(subject_avg)
 
                     # Speicherung aller Noten für das Fach (mit Edupage-Namen)
-                    final_grades[subject].append(rounded_avg)
+                    final_grades[subject][(year, term)] = rounded_avg  # Speichert die Note mit Jahr und Halbjahr
 
         # Sicherstellen, dass jedes Fach genau 4 Halbjahresnoten hat
         for subject, term_dict in final_grades.items():
-            all_grades = term_dict
+            all_grades = list(term_dict.values())  # Werte direkt in eine Liste umwandeln
 
             while len(all_grades) < 4:
                 avg = sum(all_grades) / len(all_grades)  # Durchschnitt der vorhandenen Noten berechnen
                 all_grades.append(round(avg))  # Fehlende Noten mit dem gerundeten Durchschnitt ersetzen
 
             # Noten wieder pro Halbjahr aufteilen
-            final_grades[subject] = dict(zip(sorted(term_dict.keys()), all_grades))
+            final_grades[subject] = dict(zip(sorted(term_dict.keys(), key=lambda x: (x[0], x[1].value)), all_grades))
 
         # Noten streichen für Grundkurse (kleines Fächerkürzel)
         to_remove = 4  # 4 Noten dürfen gestrichen werden
@@ -152,8 +152,6 @@ class EdupageAPI(Edupage):
 
         return final_grades
     
-
-        
 
 
     # Durchschnitt in Abhängigkeit von Jahr und Halbjahr berechnen
