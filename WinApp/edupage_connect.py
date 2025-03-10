@@ -273,9 +273,7 @@ if edupage_instance.isLoggedIn():
     # Notenberechnung starten
     result = edupage_instance.getAbiGrade(current_school_year, current_term)
 
-    # Ergebnis ausgeben
-    import pprint
-    pprint.pprint(result)
+    print(result)
 else:
     print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")
 
