@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 
+//Window starten und maximieren
 Window {
     width: 1920
     height: 1080
@@ -15,6 +16,7 @@ Window {
         source: "login.qml"
     }
 
+    // Signal zur Seitenänderung empfangen
     Connections {
         target: backend
 

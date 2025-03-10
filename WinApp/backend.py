@@ -3,12 +3,15 @@ from edupage_connect import EdupageAPI
 from datetime import datetime
 from edupage_api import Term, Grades
 
+# Backend Klasse in QML verfügbar
 class Backend(QObject):
 
+    # Globale Signale
     loginAttention = Signal()
     loginSuccess = Signal(bool)
     sendData = Signal(str, str)
 
+    # Globale Variablen (von außen erreichbar OOP)
     schoolClass = 12
     schoolHalf = Term.SECOND
     schoolYear = 2024
@@ -17,6 +20,7 @@ class Backend(QObject):
     def __init__(self):
         super().__init__()
 
+    # Login Signal empfangen
     @Slot(str, str, str)
     def login(self, school, username, password):
 
@@ -27,14 +31,16 @@ class Backend(QObject):
 
         QTimer.singleShot(1200, self.check_login_status)
 
+    # Login Status abrufen und Startdaten senden
     def check_login_status(self):
         edupage = EdupageAPI()
         grade_instance = Grades(edupage.edupage)
 
-        if len(grade_instance.get_grades(term=self.schoolHalf, year=datetime.now().year)) > 0:
-            self.schoolYear = int(datetime.now().year)
-        elif len(grade_instance.get_grades(term=self.schoolHalf, year=(int(datetime.now().year) - 1))) > 0:
-            self.schoolYear = int(datetime.now().year) - 1
+        if edupage.isLoggedIn():
+            if len(grade_instance.get_grades(term=self.schoolHalf, year=datetime.now().year)) > 0:
+                self.schoolYear = int(datetime.now().year)
+            elif len(grade_instance.get_grades(term=self.schoolHalf, year=(int(datetime.now().year) - 1))) > 0:
+                self.schoolYear = int(datetime.now().year) - 1
         
         if edupage.isLoggedIn():
             print("Edupage logged in!")
@@ -45,6 +51,7 @@ class Backend(QObject):
             print("Edupage login failed!")
             self.loginSuccess.emit(False)
 
+    # Notenstatistikänderungg empfangen
     @Slot(int)
     def getMarkStatistic(self, months):
         edupage = EdupageAPI()
@@ -54,9 +61,11 @@ class Backend(QObject):
             self.lastMonths = months
             self.sendDataToQML("chart", edupage.getMarkHistory(months=months, year=self.schoolYear, term=self.schoolHalf))
 
+    # Daten an QML senden
     def sendDataToQML(self, usage, data):
         self.sendData.emit(usage, data)
 
+    # Durchschnittsnotenänderung empfangen
     @Slot(str)
     def getAverage(self, selection):
         edupage = EdupageAPI()
@@ -67,6 +76,7 @@ class Backend(QObject):
         elif term == 2:
             self.sendDataToQML("average", str(edupage.getAverage(year, Term.SECOND)))
 
+    # Klassenänderung empfangen
     @Slot(str)
     def noteClass(self, selection):
         self.schoolClass = int(selection.split("/")[0])

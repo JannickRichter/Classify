@@ -11,10 +11,10 @@ if __name__ == "__main__":
 
     backend = Backend()
 
-    # Backend in QML verfügbar machen
+    # Backend nach QML
     engine.rootContext().setContextProperty("backend", backend)
 
-    engine.load("./WinApp/qml/main.qml")  # Lade die UI
+    engine.load("./WinApp/qml/main.qml")  # Lädt die UI
 
     if not engine.rootObjects():
         sys.exit(-1)

@@ -6,6 +6,7 @@ Item {
     width: 1920
     height: 1080
 
+    // String für die Tab-Auswahl
     property string selector: "statistic"
 
     Image {
@@ -42,6 +43,7 @@ Item {
                 id: row
                 anchors.fill: parent
 
+                // Erster Tab: Abitur Note
                 Rectangle {
                     id: rectangle2
                     width: row.width / 2
@@ -69,7 +71,6 @@ Item {
                         width: parent.width - 10
                         height: parent.height
                         anchors.left: parent.left
-                        anchors.leftMargin: 0
                         cursorShape: Qt.PointingHandCursor
                         hoverEnabled: true
 
@@ -89,6 +90,7 @@ Item {
                     }
                 }
 
+                // Zweiter Tab: Notenstatistik
                 Rectangle {
                     id: rectangle3
                     width: row.width / 2
@@ -116,7 +118,6 @@ Item {
                         width: parent.width - 10
                         height: parent.height
                         anchors.right: parent.right
-                        anchors.rightMargin: 0
                         cursorShape: Qt.PointingHandCursor
                         hoverEnabled: true
 
@@ -141,7 +142,6 @@ Item {
         }
 
         // Loader, der den Inhalt unter der Tab-Leiste anzeigt:
-
         Loader {
             id: tabContent
             anchors.top: rectangle1.bottom
@@ -152,7 +152,6 @@ Item {
         }
 
         // Component für die Notenstatistik-Seite
-
         Component {
             id: notenStatistikPage
             Rectangle {
@@ -172,14 +171,14 @@ Item {
                     antialiasing: true
                     legend.visible: false
 
-                    // X-Achse: DateTimeAxis zeigt das Datum an (Format z.B. "09 Dez")
+                    // X-Achse: DateTimeAxis zeigt das Datum an
                     DateTimeAxis {
                         id: dateAxis
                         format: "dd MMM"
                         tickCount: 10
                     }
 
-                    // Y-Achse: ValueAxis von 0 bis 15 mit 16 Ticks, die ganze Zahlen anzeigen
+                    // Y-Achse: ValueAxis von 0 bis 15 mit 16 Ticks
                     ValueAxis {
                         id: valueAxis
                         min: 0
@@ -209,8 +208,7 @@ Item {
                     anchors.rightMargin: 30
                     anchors.bottomMargin: 30
 
-
-
+                    // Notendurchschnitt-Anzeige
                     Rectangle {
                         id: rectangle6
                         width: 3 * parent.width / 8
@@ -219,14 +217,9 @@ Item {
                         anchors.left: row2.right
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 0
-                        anchors.bottomMargin: 0
 
                         Text {
                             id: _text4
-                            x: 1086
-                            y: 19
                             text: qsTr("Notendurchschnitt:")
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
@@ -236,25 +229,16 @@ Item {
 
                         Item {
                             id: _item
-                            x: 1690
-                            y: 0
                             anchors.left: _text4.right
                             anchors.right: parent.right
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
-                            anchors.leftMargin: 0
-                            anchors.rightMargin: 0
-                            anchors.topMargin: 0
-                            anchors.bottomMargin: 0
 
                             Rectangle {
                                 id: rectangle4
-                                x: 64
-                                y: 8
                                 width: background1.width / 13
                                 color: "#a17c6b"
                                 radius: 15
-                                border.width: 0
                                 anchors.right: parent.right
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
@@ -274,7 +258,6 @@ Item {
 
                             ComboBox {
                                 id: comboBox
-                                y: 7
                                 anchors.left: parent.left
                                 anchors.right: rectangle4.left
                                 anchors.top: parent.top
@@ -289,10 +272,10 @@ Item {
                                     backend.getAverage(comboBox.currentText);
                                 }
                             }
-
                         }
                     }
 
+                    // Schulklasse-Auswahl
                     Item {
                         id: row4
                         width: 2 * parent.width / 8
@@ -312,14 +295,9 @@ Item {
                             anchors.right: parent.right
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
-                            anchors.leftMargin: 0
-                            anchors.rightMargin: 0
-                            anchors.topMargin: 0
-                            anchors.bottomMargin: 0
 
                             ComboBox {
                                 id: comboBox1
-                                y: 8
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
                                 anchors.leftMargin: 30
@@ -334,15 +312,14 @@ Item {
                                 }
                             }
                         }
-
                     }
+
+                    // Zeitrahmen-Auswahl
                     Item {
                         id: row2
                         width: 3 * parent.width / 8
                         height: parent.height
                         anchors.left: row4.right
-                        anchors.leftMargin: 0
-                        clip: false
 
                         Text {
                             id: _text2
@@ -352,7 +329,6 @@ Item {
                             anchors.leftMargin: 30
                             font.pixelSize: 24
                             horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignTop
                         }
 
                         Slider {
@@ -387,10 +363,9 @@ Item {
                             font.pixelSize: 24
                         }
                     }
-
                 }
 
-                // Funktion, die den JSON-String verarbeitet und die Daten in die LineSeries überträgt
+                // JSON-String verarbeiten und Daten in LineSeries übertragen
                 function processChartData(jsonStr) {
                     var data = JSON.parse(jsonStr);
                     lineSeries.clear();
@@ -400,7 +375,7 @@ Item {
 
                     for (var i = 0; i < data.length; i++) {
                         var entry = data[i];
-                        // Konvertiere das Datum (Format "YYYY-MM-DD") in einen Zeitstempel
+                        // Konvertiere das Datum in TimeStemp
                         var timeValue = new Date(entry.week).getTime();
                         lineSeries.append(timeValue, entry.average);
                         if (timeValue < minTime)
@@ -413,11 +388,11 @@ Item {
                     dateAxis.max = new Date(maxTime);
                 }
 
-                // Connections-Element, das das Signal vom Python-Backend empfängt
+                // Connections-Element, empfängt gesandte Daten vom Backend
                 Connections {
                     target: backend
                     function onSendData(usage, data) {
-                        // Hier gehen wir davon aus, dass das Signal so definiert ist, dass usage und data als Strings übertragen werden.
+                        // Prüfen des Usage und Aktion ausführen (Daten eintragen, Durchschnitt ändern, Diagramm Skalierung)
                         if (usage == "chart") {
                             processChartData(data);
                         } else if (usage == "average") {
@@ -448,8 +423,5 @@ Item {
                 }
             }
         }
-
-
-
     }
 }

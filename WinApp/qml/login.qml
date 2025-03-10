@@ -52,6 +52,7 @@ Item {
             spacing: 24
             padding: 20
 
+            // Subdomain Eingabefeld
             Row {
                 id: row
                 width: parent.width
@@ -86,6 +87,7 @@ Item {
                 }
             }
 
+            // Username Eingabefeld
             Row {
                 id: row1
                 width: parent.width
@@ -119,6 +121,7 @@ Item {
                 }
             }
 
+            // Passwort Eingabefeld
             Row {
                 id: row2
                 width: parent.width
@@ -154,6 +157,7 @@ Item {
             }
         }
 
+        // Login Button
         Button {
             id: button
             x: 156
@@ -171,9 +175,9 @@ Item {
                 backend.login(textInput.text, textInput1.text, textInput2.text)
             }
         }
-
     }
 
+    // Logo Bild
     Image {
         id: image
         width: 692
@@ -187,6 +191,7 @@ Item {
         fillMode: Image.PreserveAspectFit
     }
 
+    // Ladeindikator
     BusyIndicator {
         id: busyIndicator
         width: 110
@@ -199,6 +204,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
+    // Mausbereich für Parallax-Effekt
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -208,14 +214,17 @@ Item {
         // Keine Klick-Ereignisse blockieren
     }
 
+    // Verbindungen zum Backend
     Connections {
         target: backend
 
+        // Zeigt den Ladeindikator an, wenn die Login-Anfrage gesendet wird
         function onLoginAttention() {
             busyIndicator.enabled = true
             busyIndicator.visible = true
         }
 
+        // Verarbeitet das Login-Ergebnis
         function onLoginSuccess(success) {
             if (!success) {
                 busyIndicator.enabled = false
@@ -224,6 +233,4 @@ Item {
             }
         }
     }
-
-
 }

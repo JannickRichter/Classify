@@ -1,7 +1,5 @@
 from edupage_api import Edupage
 from edupage_api.exceptions import BadCredentialsException, CaptchaException
-from edupage_api import Grades
-from edupage_api import Term
 import re
 import json
 from datetime import datetime, timedelta
@@ -9,12 +7,12 @@ from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from edupage_api import Grades, Term
 
+# EdupageAPI Klasse als Singleton (ein Element, immer wieder aufrufbar)
 class EdupageAPI(Edupage):
     _instance = None  # Singleton-Instanz
     loggedIn = False
 
     def __new__(cls, *args, **kwargs):
-        # Erstelle nur eine Instanz der Klasse
         if cls._instance is None:
             cls._instance = super(EdupageAPI, cls).__new__(cls)
             cls._instance.edupage = Edupage()
@@ -23,6 +21,7 @@ class EdupageAPI(Edupage):
             cls._instance.school = ""
         return cls._instance
 
+    # Login Funktion
     def login(self, username: str, password: str, school: str):
         self.username = username
         self.password = password
@@ -40,17 +39,17 @@ class EdupageAPI(Edupage):
             return None
         self.loggedIn = True
 
-    def logOut(self):
-        self.loggedIn = False
-
+    # loggedIn Variable abfragen
     def isLoggedIn(self):
         return self.loggedIn
 
+    # Abidurchschnitt berechnen
     def getAbiGrade(self):
         if not self.loggedIn:
             print("Not logged in Edupage!")
             return None
 
+    # Durchschnitt in Abhängigkeit von Jahr und Halbjahr berechnen
     def getAverage(self, year: int, term: Term):
         if not self.loggedIn:
             print("Not logged in Edupage!")
@@ -64,15 +63,15 @@ class EdupageAPI(Edupage):
         for grade in grades:
             subject_grades[grade.subject_name].append(grade)
 
-        total_sum = 0  # Gesamtsumme aller Fach-Durchschnitte
-        total_count = 0  # Anzahl der Fächer für den Durchschnitt
+        total_sum = 0  # Gesamtsumme der Fach-Durchschnitte
+        total_count = 0  # Anzahl Fächer
 
         # Alle Fächer durchgehen
         for subject, subject_notes in subject_grades.items():
             normal_grades = []
             exam_grades = []
 
-            # Fächer nach Kursarbeiten filtern
+            # nach Kursarbeiten filtern
             for note in subject_notes:
                 if re.search(r"\b(ka|KA|Ka|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title):  # Kursarbeit erkennen
                     exam_grades.append(note.grade_n)
@@ -97,6 +96,7 @@ class EdupageAPI(Edupage):
         # Gesamtdurchschnitt berechnen
         return round(total_sum / total_count, 2) if total_count > 0 else None
     
+    # Notenverlauf als JSON String (Verlauf) in Abhängigkeit von aktuellem Schuljahr, Halbjahr und den einzurechnenden Monaten
     def getMarkHistory(self, months: int, year: int, term: Term):
         if not self.loggedIn:
             print("Not logged in Edupage!")
@@ -107,7 +107,7 @@ class EdupageAPI(Edupage):
 
         grades_instance = Grades(self.edupage)
         
-        # Notendaten des aktuellen Terms abrufen
+        # Notendaten des aktuellen Schulhalbjahres abrufen
         current_grades = grades_instance.get_grades(term=term, year=year)
         
         # Bestimme die beiden vorherigen Schulhalbjahre (Fallback) abhängig vom aktuellen Term
@@ -123,13 +123,13 @@ class EdupageAPI(Edupage):
         fallback_grades1 = grades_instance.get_grades(term=fallback_term1, year=fallback_year1) if fallback_term1 is not None else []
         fallback_grades2 = grades_instance.get_grades(term=fallback_term2, year=fallback_year2) if fallback_term2 is not None else []
         
-        # Alle Notendaten zusammenführen
+        # Noten aller Halbjahre addieren
         all_grades = current_grades + fallback_grades1 + fallback_grades2
 
-        # Filtere Noten, die im Zeitraum [start_date, now] liegen
+        # Filtere Noten nach Datum (zwischen Startdatum und jetzt)
         filtered_grades = [g for g in all_grades if start_date <= g.date <= now]
 
-        # Gruppiere die Noten nach Kalenderwoche (Wochenstart: Montag)
+        # Noten nach Kalenderwochen gruppieren
         week_grades = defaultdict(list)
         for g in filtered_grades:
             week_start = (g.date - timedelta(days=g.date.weekday())).date()
@@ -145,5 +145,5 @@ class EdupageAPI(Edupage):
                 "average": round(avg, 1)
             })
 
-        # Ausgabe als JSON-String, geeignet für z. B. ein QML-Liniendiagramm
+        # Ausgabe als JSON-String für QML Diagramm
         return json.dumps(output)
