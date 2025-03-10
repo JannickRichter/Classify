@@ -78,7 +78,7 @@ class EdupageAPI(Edupage):
                 total_grades = sum(len(notes) for notes in subject_grades.values())  # Gesamtanzahl der Noten
                 total_subjects = len(subject_grades)  # Anzahl der Fächer
 
-                if total_grades < 2 * total_subjects:
+                if total_grades < 3 * total_subjects:
                     print(f"Nicht genügend Noten für {year} {term} vorhanden.")
                     continue  # Halbjahr wird übersprungen
 
@@ -113,17 +113,33 @@ class EdupageAPI(Edupage):
 
                     # Speicherung aller Noten für das Fach (mit Edupage-Namen)
                     final_grades[subject][(year, term)] = rounded_avg  # Speichert die Note mit Jahr und Halbjahr
-
+       
+        # Sicherstellen, dass jedes Fach genau 4 Halbjahresnoten hat
         # Sicherstellen, dass jedes Fach genau 4 Halbjahresnoten hat
         for subject, term_dict in final_grades.items():
-            all_grades = list(term_dict.values())  # Werte direkt in eine Liste umwandeln
+            # Alle vorhandenen Noten sammeln
+            all_grades = list(term_dict.values())  # Hier sind die Halbjahresnoten als Liste
 
+            # Fehlende Noten durch den Durchschnitt ersetzen
             while len(all_grades) < 4:
-                avg = sum(all_grades) / len(all_grades)  # Durchschnitt der vorhandenen Noten berechnen
-                all_grades.append(round(avg))  # Fehlende Noten mit dem gerundeten Durchschnitt ersetzen
+                if all_grades:  # Falls schon Noten vorhanden sind, berechne den Durchschnitt
+                    avg = sum(all_grades) / len(all_grades)
+                    all_grades.append(round(avg))  # Durchschnitt aufrunden und hinzufügen
+                else:
+                    return None # Falls keine Noten vorhanden sind
 
-            # Noten wieder pro Halbjahr aufteilen
-            final_grades[subject] = dict(zip(sorted(term_dict.keys(), key=lambda x: (x[0], x[1].value)), all_grades))
+            # Neue Noten zurück in das Dictionary einfügen, basierend auf den Schuljahren und Halbjahren
+            available_terms = sorted(term_dict.keys(), key=lambda x: (x[0], x[1].value))
+            missing_terms = [(year, term) for year in range(start_year, end_year + 1) for term in [Term.FIRST, Term.SECOND] if (year, term) not in term_dict]
+
+            for missing_term in missing_terms:
+                if len(all_grades) == 0:
+                    break
+                term_dict[missing_term] = all_grades.pop(0)  # Fehlende Halbjahre mit Durchschnitt auffüllen
+
+            # Endgültiges Dictionary speichern
+            final_grades[subject] = dict(sorted(term_dict.items(), key=lambda x: (x[0][0], x[0][1].value)))
+
 
         # Noten streichen für Grundkurse (kleines Fächerkürzel)
         to_remove = 4  # 4 Noten dürfen gestrichen werden
@@ -152,8 +168,7 @@ class EdupageAPI(Edupage):
 
         return final_grades
     
-
-
+    
     # Durchschnitt in Abhängigkeit von Jahr und Halbjahr berechnen
     def getAverage(self, year: int, term: Term):
         if not self.loggedIn:
