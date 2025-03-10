@@ -144,7 +144,7 @@ class EdupageAPI(Edupage):
         grundkurse = {subject: grades for subject, grades in final_grades.items() if subject.islower()}
 
         # Schlechte Noten in Grundkursen streichen
-        for subject, term_grades in sorted(grundkurse.items(), key=lambda x: min(x[1].values()), reverse=True):
+        for subject, term_grades in sorted(grundkurse.items(), key=lambda x: max(x[1].values())):
             if to_remove <= 0:
                 break # wenn bereits 4 Noten gestrichen wurden
 
@@ -160,6 +160,21 @@ class EdupageAPI(Edupage):
 
                 if to_remove <= 0:
                     break
+
+        #return final_grades
+
+        # Summe der Halbjahresergebnisse pro Fach 
+        total_points_per_subject = {subject: sum(grades.values()) for subject, grades in final_grades.items()}
+
+        # Gesamtpunktzahl in allen Fächern
+        total_abi_points = sum(total_points_per_subject.values())
+
+        
+        print("\nGesamtpunktzahl pro Fach:")
+        for subject, points in total_points_per_subject.items():
+            print(f"{subject}: {points} Punkte")
+
+        print(f"\nGesamtpunktzahl für das Abitur: {total_abi_points} Punkte")
 
         return final_grades
     
