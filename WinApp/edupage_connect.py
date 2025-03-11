@@ -46,7 +46,7 @@ class EdupageAPI(Edupage):
     def isLoggedIn(self):
         return self.loggedIn
 
-    def getAbiGrade(self, current_school_year: int, current_term: Term):
+    def getAbiGrade(self, klasse: int, school_year_edupage: int):
         if not self.loggedIn: # Ist Benutzer eingelogt?
             print("Not logged in Edupage!")
             return None
@@ -55,14 +55,18 @@ class EdupageAPI(Edupage):
 
         # BERARBEITEN MIT JANNICK
         # Hier muss nochmal eine Bearbeitung stattfinden. 
-        start_year = current_school_year - 1  # 11. Klasse beginnt ein Jahr vor der aktuellen Eingabe
-        end_year = current_school_year  # 12. Klasse endet im aktuellen Schuljahr
+        if klasse == 11:
+            start_year = school_year_edupage
+        elif klasse == 12:
+            start_year = school_year_edupage - 1
 
-        for year in range(start_year, end_year + 1):  # Durchläuft 11. und 12. Klasse
+        #start_year = current_school_year - 1  # 11. Klasse beginnt ein Jahr vor der aktuellen Eingabe
+        #end_year = current_school_year  # 12. Klasse endet im aktuellen Schuljahr
+
+        for year in range(start_year, start_year + 2):  # Durchläuft 11. und 12. Klasse
             for term in [Term.FIRST, Term.SECOND]:  # Beide Halbjahre berücksichtigen
                 grades_instance = Grades(self.edupage)
                 grades = grades_instance.get_grades(term=term, year=year)
-
                 subject_grades = defaultdict(list)
 
                 # Noten nach Fächern gruppieren
@@ -84,13 +88,13 @@ class EdupageAPI(Edupage):
 
                     # Fächer nach Kursarbeiten filtern
                     for note in subject_notes:
-                        if re.search(r"\b(ka|KA|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title):  
+                        if re.search(r"\b(ka|KA|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title) and subject.isupper():  
                             exam_grades.append(note.grade_n)  # Kursarbeiten speichern
                         else:
                             normal_grades.append(note.grade_n)  # Normale Noten speichern
 
                     # Gewichtung Kursarbeiten nur für Leistungskurse (Fächerkürzel in Großbuchstaben)
-                    if subject.isupper() and exam_grades:  # Falls Fach großgeschrieben ist und Kursarbeiten existieren
+                    if exam_grades:  # Falls Fach großgeschrieben ist und Kursarbeiten existieren
                         exam_weight = 1 / 3
                         normal_weight = 2 / 3
                     else:  # Falls es ein Grundkurs ist oder keine Kursarbeiten existieren
@@ -110,7 +114,6 @@ class EdupageAPI(Edupage):
                     final_grades[subject][(year, term)] = rounded_avg  # Speichert die Note mit Jahr und Halbjahr
        
         # Sicherstellen, dass jedes Fach genau 4 Halbjahresnoten hat
-        # Sicherstellen, dass jedes Fach genau 4 Halbjahresnoten hat
         for subject, term_dict in final_grades.items():
             # Alle vorhandenen Noten sammeln
             all_grades = list(term_dict.values())  # Hier sind die Halbjahresnoten als Liste
@@ -125,7 +128,7 @@ class EdupageAPI(Edupage):
 
             # Neue Noten zurück in das Dictionary einfügen, basierend auf den Schuljahren und Halbjahren
             available_terms = sorted(term_dict.keys(), key=lambda x: (x[0], x[1].value))
-            missing_terms = [(year, term) for year in range(start_year, end_year + 1) for term in [Term.FIRST, Term.SECOND] if (year, term) not in term_dict]
+            missing_terms = [(year, term) for year in range(start_year, start_year + 2) for term in [Term.FIRST, Term.SECOND] if (year, term) not in term_dict]
 
             for missing_term in missing_terms:
                 if len(all_grades) == 0:
@@ -135,31 +138,31 @@ class EdupageAPI(Edupage):
             # Endgültiges Dictionary speichern
             final_grades[subject] = dict(sorted(term_dict.items(), key=lambda x: (x[0][0], x[0][1].value)))
 
+        # Dictionary, das speichert, wie viele Noten pro Fach bereits gestrichen wurden
+        removed_count_per_subject = defaultdict(int)
 
-        # Noten streichen für Grundkurse (kleines Fächerkürzel)
-        to_remove = 4  # 4 Noten dürfen gestrichen werden
-        removed_per_term = defaultdict(int)  # Speichert, wie viele Noten pro Halbjahr entfernt wurden
+        # Alle Halbjahre durchgehen
+        for year in range(start_year, start_year + 2):
+            for term in [Term.FIRST, Term.SECOND]:
 
-        # Liste der Grundkurse filtern (kleines Fächerkürzel)
-        grundkurse = {subject: grades for subject, grades in final_grades.items() if subject.islower()}
+                term_grades = {}  # Speichert Noten der Grundkurse in diesem Halbjahr
+                    
+                # Alle Fächer durchgehen
+                for subject, grades in final_grades.items():
+                    if subject.islower() and (year, term) in grades:  # Nur Grundkurse & vorhandene Noten
+                        if removed_count_per_subject[subject] < 2:  # Maximal 2 Streichungen pro Fach
+                            term_grades[subject] = grades[(year, term)]  # Speichern der Note
 
-        # Schlechte Noten in Grundkursen streichen
-        for subject, term_grades in sorted(grundkurse.items(), key=lambda x: max(x[1].values())):
-            if to_remove <= 0:
-                break # wenn bereits 4 Noten gestrichen wurden
+                # Falls Noten in diesem Halbjahr gefunden wurden, schlechteste Note entfernen
+                if term_grades:
+                    worst_subject = min(term_grades, key=term_grades.get)  # Fach mit der schlechtesten Note
+                    worst_grade = term_grades[worst_subject]
 
-            sorted_terms = sorted(term_grades.items(), key=lambda x: x[1])  # Sortieren nach schlechtester Note
-
-            removed_count = 0  # Zähler für dieses Fach
-            for term_year, grade in sorted_terms:
-                if removed_count < 2 and to_remove > 0 and removed_per_term[term_year] == 0:
-                    del final_grades[subject][term_year]  # Note entfernen
-                    removed_per_term[term_year] += 1  # Halbjahr als gestrichen markieren
-                    removed_count += 1
-                    to_remove -= 1
-
-                if to_remove <= 0:
-                    break
+                    # Note aus final_grades entfernen
+                    del final_grades[worst_subject][(year, term)]
+                    removed_count_per_subject[worst_subject] += 1  # Zähler für dieses Fach erhöhen
+                    
+                    print(f"Entfernt: Note {worst_grade} aus {worst_subject} ({year}, {term})")
 
         #return final_grades
 
@@ -175,6 +178,8 @@ class EdupageAPI(Edupage):
             print(f"{subject}: {points} Punkte")
 
         print(f"\nGesamtpunktzahl für das Abitur: {total_abi_points} Punkte")
+
+        print(final_grades["MA"])
 
         return final_grades
     
@@ -308,11 +313,11 @@ edupage_instance.login(username, password, school)
 
 # Falls erfolgreich eingeloggt, getAbiGrade ausführen
 if edupage_instance.isLoggedIn():
-    current_school_year = 2024  # Beispiel: aktuelles Schuljahr
-    current_term = Term.FIRST  # Beispiel: 1. Halbjahr
+    klasse = 12  # Beispiel: aktuelles Schuljahr
+    school_year_edupage = 2024  # Beispiel: 1. Halbjahr
 
     # Notenberechnung starten
-    result = edupage_instance.getAbiGrade(current_school_year, current_term)
+    result = edupage_instance.getAbiGrade(klasse, school_year_edupage)
 
     print(result)
 else:
