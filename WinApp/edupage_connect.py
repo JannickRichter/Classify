@@ -55,9 +55,9 @@ class EdupageAPI(Edupage):
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         variables = Variables()
-        if not variables.schoolClassSelected:
+        """if not variables.schoolClassSelected:
             print("Kein Schuljahr eingegeben")
-            return None
+            return None"""
 
         klasse = variables.schoolClass
         school_year_edupage = variables.schoolYear
@@ -179,42 +179,64 @@ class EdupageAPI(Edupage):
         total_points_per_subject = {subject: sum(grades.values()) for subject, grades in final_grades.items()}
 
         # Gesamtpunktzahl in allen Fächern
-        total_abi_points = sum(total_points_per_subject.values())
+        block1 = sum(total_points_per_subject.values())
 
         
         print("\nGesamtpunktzahl pro Fach:")
         for subject, points in total_points_per_subject.items():
-            print(f"{subject}: {points} Punkte")
+            if subject.isupper:
+                print("Fach: " + subject)
 
-        print(f"\nGesamtpunktzahl für das Abitur: {total_abi_points} Punkte")
+            if subject.islower:
+                print(subject)
+
+            print(f"{subject}: {points} Punkte")
+        
+        
+
+        print(f"\nGesamtpunktzahl für das Abitur: {block1} Punkte")
 
         print(final_grades["MA"])
 
         # Berechnung des Block2
-        exam1 = "MA"
+        exam1 = sub1
         exam2 = sub2
         exam3 = sub3
         exam4 = sub4
         exam5 = sub5
+
         semi_mark = semi_mark
 
-        # 
-
         exam = [exam1, exam2, exam3, exam4]
+        print("Examen Noten:" + str(exam))
+        block2 = 0.0
 
-        block2 = 0
+        if exam5 == None: # Wenn Seminarfach existiert
+            block2 = semi_mark * 4 # 4-fache Gewichtung
+
+        if semi_mark == None: # Wenn Seminarfach nicht mit einfließt
+            pruefung_grade = {} # DIctionary für die "Prüfungsnoten" 
+            pruefung_grade = final_grades.get(exam5, {}) # Alle Halbhjaresnoten addieren -- Durchschnitt und vierfache Gewichtung kürzen sich
+            block2 = block2 + sum(pruefung_grade.values())
+
+        for i in exam: # Schleife für alle 4 Pflichtprüfungen -- Aufbau ist der selbe wie oben
+            pruefung_grade = {} 
+            pruefung_grade = final_grades.get(i, {})
+            block2 = block2 + sum(pruefung_grade.values())
+            final_grades[i]
+            print("Fächer des Fachs:" + str(i))
+            print('Note nach: ' + str(i) + ' ' + str(block2))
+
+        abitur_punkte = block1 + block2 # Summe der Punkte aus Block1 und Block2
+        print("Abiturpunkte" + str(abitur_punkte))
+
+        noten_counter = 4.0 # Mindestduchschnitt
+        x = 300 # Mindestpunktzahl für das Abitur
+
 
         # Führt Schleife für alle Prüfungen durch
-        for i in range(5):
-            for i in range(4):
-                actuel_note = total_grades.get(  + i + 1)
 
         print(final_grades[exam1])
-
-        #wenn semi existiert, dann block2 + semi_mark
-        #else exam5 Durchschnitt aus allen Halbjahren
-
-
 
         return final_grades
     
@@ -335,12 +357,12 @@ class EdupageAPI(Edupage):
         # Ausgabe als JSON-String für QML Diagramm
         return json.dumps(output)
 
-"""# Objekt der EdupageAPI-Klasse erstellen
+#Objekt der EdupageAPI-Klasse erstellen
 edupage_instance = EdupageAPI()
 
 # Mit Benutzerdaten anmelden (ersetze durch echte Daten)
-username = ""
-password = ""
+username = "ErikThrum"
+password = "1Hans!!!"
 school = "duden-gymn"
 edupage_instance.login(username, password, school)
 
@@ -348,10 +370,16 @@ edupage_instance.login(username, password, school)
 if edupage_instance.isLoggedIn():
     klasse = 12  # Beispiel: aktuelles Schuljahr
     school_year_edupage = 2024  # Beispiel: 1. Halbjahr
+    sub1 = "MA"
+    sub2 = "WR"
+    sub3 = "EN"
+    sub4 = "if"
+    sub5 = 'ge'
 
+    semi_mark = None
     # Notenberechnung starten
-    result = edupage_instance.getAbiGrade(klasse, school_year_edupage)
+    result = edupage_instance.getAbiGrade(sub1, sub2, sub3, sub4, sub5, semi_mark)
 
     print(result)
 else:
-    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")"""
+    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")
