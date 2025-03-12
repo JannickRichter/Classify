@@ -55,15 +55,13 @@ class EdupageAPI(Edupage):
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         variables = Variables()
-        """if not variables.schoolClassSelected:
+        if not variables.schoolClassSelected:
             print("Kein Schuljahr eingegeben")
-            return None"""
+            return None
 
         klasse = variables.schoolClass
         school_year_edupage = variables.schoolYear
 
-        # BERARBEITEN MIT JANNICK
-        # Hier muss nochmal eine Bearbeitung stattfinden.
         if klasse == 11:
             start_year = school_year_edupage
         elif klasse == 12:
@@ -86,7 +84,7 @@ class EdupageAPI(Edupage):
                 total_grades = sum(len(notes) for notes in subject_grades.values())  # Gesamtanzahl der Noten
                 total_subjects = len(subject_grades)  # Anzahl der Fächer
 
-                if total_grades < 2 * total_subjects:
+                if total_grades < 3 * total_subjects:
                     print(f"Nicht genügend Noten für {year} {term} vorhanden.")
                     continue  # Halbjahr wird übersprungen
 
@@ -146,7 +144,6 @@ class EdupageAPI(Edupage):
 
             # Endgültiges Dictionary speichern
             final_grades[subject] = dict(sorted(term_dict.items(), key=lambda x: (x[0][0], x[0][1].value)))
-
         # Dictionary, das speichert, wie viele Noten pro Fach bereits gestrichen wurden
         removed_count_per_subject = defaultdict(int)
 
@@ -225,6 +222,7 @@ class EdupageAPI(Edupage):
         abitur_punkte = round(block1 + block2, 0) # Summe der Punkte aus Block1 und Block2
         print("Abiturpunkte" + str(abitur_punkte))
 
+<<<<<<< HEAD
 
         """# Berechnung des Notenschnitts
         noten_counter = 4.0 # Mindestduchschnitt
@@ -233,13 +231,33 @@ class EdupageAPI(Edupage):
         if abitur_punkte < 823:
             
             while abitur_punkte 
+=======
+        # Berechnung des Notenschnitts
+        abitur_note = 4.0 # Mindestduchschnitt
+        x = 0 # Mindestpunktzahl für das Abitur
+        noten_grenze = 300 + 17 * x + x
+>>>>>>> 4b716f0874381172c6be1f8a7c8c44daa8298c1d
 
+        if abitur_punkte <= 822:
+            while noten_grenze <= abitur_punkte:
+                if noten_grenze == abitur_punkte:
+                    abitur_note += 0.1
+                x += 1
+                noten_grenze = 300 + 17 * x + x
+                abitur_note -= 0.1
 
+<<<<<<< HEAD
         # Führt Schleife für alle Prüfungen durch"""
+=======
+        else:
+            noten_counter = 1.0
+>>>>>>> 4b716f0874381172c6be1f8a7c8c44daa8298c1d
 
-        print(final_grades[exam1])
+        abitur_note = round(abitur_note, 1)
+    
+        print("Notenschnitt: " + str(abitur_note))
 
-        return final_grades
+        #return final_grades
     
     # Durchschnitt in Abhängigkeit von Jahr und Halbjahr berechnen
     def getAverage(self, year: int, term: Term):
@@ -362,8 +380,8 @@ class EdupageAPI(Edupage):
 edupage_instance = EdupageAPI()
 
 # Mit Benutzerdaten anmelden (ersetze durch echte Daten)
-username = "ErikThrum"
-password = "1Hans!!!"
+username = ""
+password = ""
 school = "duden-gymn"
 edupage_instance.login(username, password, school)
 
