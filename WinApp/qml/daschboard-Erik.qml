@@ -221,18 +221,20 @@ Item {
                         anchors.top: parent.top
                         anchors.leftMargin: 0
                         anchors.topMargin: 0
-                        font.pixelSize: 12
+                        font.pixelSize: 8
                     }
 
                     CheckBox {
                         id: checkBox
                         y: 20
-                        height: 50
+                        height: 40
                         text: qsTr("Mathe")
                         anchors.left: parent.left
                         anchors.top: parent.top
                         anchors.leftMargin: 0
                         anchors.topMargin: 20
+                        font.pixelSize: 22
+                        font.underline: false
                     }
 
                     CheckBox {
@@ -242,6 +244,7 @@ Item {
                         anchors.top: parent.top
                         anchors.leftMargin: 0
                         anchors.topMargin: 60
+                        font.pixelSize: 22
                     }
 
                     CheckBox {
@@ -251,6 +254,7 @@ Item {
                         anchors.top: parent.top
                         anchors.leftMargin: 0
                         anchors.topMargin: 100
+                        font.pixelSize: 22
                     }
 
                     CheckBox {
@@ -260,6 +264,7 @@ Item {
                         anchors.top: parent.top
                         anchors.leftMargin: 0
                         anchors.topMargin: 140
+                        font.pixelSize: 22
                     }
 
                     CheckBox {
@@ -269,6 +274,7 @@ Item {
                         anchors.top: parent.top
                         anchors.leftMargin: 0
                         anchors.topMargin: 180
+                        font.pixelSize: 22
                     }
                 }
 
