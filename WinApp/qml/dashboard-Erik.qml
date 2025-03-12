@@ -205,77 +205,254 @@ Item {
 
                 Item {
                     id: _item4
-                    width: 125
-                    height: 500
-                    anchors.left: parent.left
+                    width: background1.width * 0.6
                     anchors.top: parent.top
-                    anchors.leftMargin: 30
-                    anchors.topMargin: 0
+                    anchors.bottom: row4.bottom
+                    anchors.topMargin: 50
+                    anchors.bottomMargin: 50
+                    anchors.horizontalCenter: parent.horizontalCenter
 
                     Text {
                         id: _text7
-                        height: 0
-                        text: qsTr("schriftliche Prüfungen")
-                        anchors.verticalCenter: parent.verticalCenter
+                        text: qsTr("Wähle 5 Prüfungsfächer!")
                         anchors.left: parent.left
                         anchors.top: parent.top
                         anchors.leftMargin: 0
                         anchors.topMargin: 0
-                        font.pixelSize: 8
+                        font.pixelSize: 28
+                        font.bold: true
                     }
 
-                    CheckBox {
-                        id: checkBox
-                        y: 20
-                        height: 40
-                        text: qsTr("Mathe")
+                    Item {
+                        id: _item2
+                        height: 400
                         anchors.left: parent.left
-                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.top: _text7.bottom
                         anchors.leftMargin: 0
-                        anchors.topMargin: 20
-                        font.pixelSize: 22
-                        font.underline: false
+                        anchors.rightMargin: 0
+                        anchors.topMargin: 30
+
+                        Rectangle {
+                            id: rectangle7
+                            x: 0
+                            width: 280
+                            color: "#80a17c6b"
+                            radius: 20
+                            border.width: 0
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.topMargin: 0
+                            anchors.bottomMargin: 0
+
+
+
+
+                            Text {
+                                id: _text8
+                                text: qsTr("Naturwissenschaften")
+                                anchors.top: parent.top
+                                anchors.topMargin: 15
+                                font.pixelSize: 24
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+
+                            ScrollView {
+                                id: scrollView
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.top: _text8.bottom
+                                anchors.bottom: parent.bottom
+                                anchors.topMargin: 30
+                                contentHeight: 0
+
+                                Item {
+                                    id: _item3
+                                    x: 30
+                                    y: 77
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.top: _text8.bottom
+                                    anchors.bottom: parent.bottom
+                                    anchors.leftMargin: 30
+                                    anchors.rightMargin: 30
+                                    anchors.topMargin: 0
+                                    anchors.bottomMargin: 0
+
+                                    CheckBox {
+                                        id: checkBox
+                                        x: -30
+                                        y: -57
+                                        text: qsTr("Mathe")
+                                        anchors.left: parent.left
+                                        anchors.top: parent.top
+                                        anchors.leftMargin: 0
+                                        anchors.topMargin: 0
+                                        font.pixelSize: 24
+                                        font.underline: false
+                                    }
+
+                                    CheckBox {
+                                        id: checkBox2
+                                        x: -30
+                                        y: 23
+                                        text: qsTr("Physik")
+                                        anchors.left: parent.left
+                                        anchors.top: checkBox.bottom
+                                        anchors.leftMargin: 0
+                                        anchors.topMargin: 0
+                                        font.pixelSize: 24
+                                    }
+
+                                    CheckBox {
+                                        id: checkBox3
+                                        x: -30
+                                        y: 63
+                                        text: qsTr("Biologie")
+                                        anchors.left: parent.left
+                                        anchors.top: checkBox2.bottom
+                                        anchors.leftMargin: 0
+                                        anchors.topMargin: 0
+                                        font.pixelSize: 24
+                                    }
+
+                                    CheckBox {
+                                        id: checkBox4
+                                        x: -30
+                                        y: 103
+                                        text: qsTr("Chemie")
+                                        anchors.left: parent.left
+                                        anchors.top: checkBox3.bottom
+                                        anchors.leftMargin: 0
+                                        anchors.topMargin: 0
+                                        font.pixelSize: 24
+                                    }
+
+                                    CheckBox {
+                                        id: checkBox5
+                                        x: -30
+                                        text: qsTr("Astronomie")
+                                        anchors.left: parent.left
+                                        anchors.top: checkBox4.bottom
+                                        anchors.leftMargin: 0
+                                        anchors.topMargin: 0
+                                        font.pixelSize: 24
+                                    }
+
+                                    CheckBox {
+                                        id: checkBox10
+                                        x: -30
+                                        text: qsTr("Informatik")
+                                        anchors.left: parent.left
+                                        anchors.top: checkBox5.bottom
+                                        anchors.leftMargin: 0
+                                        anchors.topMargin: 0
+                                        font.pixelSize: 24
+                                    }
+                                }
+                            }
+
+
+
+
+                        }
+
+                        Rectangle {
+                            id: rectangle8
+                            width: 280
+                            color: "#80a17c6b"
+                            radius: 20
+                            border.width: 0
+                            anchors.left: rectangle7.right
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.leftMargin: 30
+                            anchors.topMargin: 0
+                            anchors.bottomMargin: 0
+                            Text {
+                                id: _text9
+                                text: qsTr("Sprache")
+                                anchors.top: parent.top
+                                anchors.topMargin: 15
+                                font.pixelSize: 24
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+
+                            Item {
+                                id: _item5
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.top: _text9.bottom
+                                anchors.bottom: parent.bottom
+                                anchors.leftMargin: 30
+                                anchors.rightMargin: 30
+                                anchors.topMargin: 30
+                                anchors.bottomMargin: 0
+                                CheckBox {
+                                    id: checkBox1
+                                    x: -30
+                                    y: -57
+                                    text: qsTr("Deutsch")
+                                    anchors.left: parent.left
+                                    anchors.top: parent.top
+                                    anchors.leftMargin: 0
+                                    anchors.topMargin: 0
+                                    font.pixelSize: 24
+                                    font.underline: false
+                                }
+
+                                CheckBox {
+                                    id: checkBox6
+                                    x: -30
+                                    y: 23
+                                    text: qsTr("Englisch")
+                                    anchors.left: parent.left
+                                    anchors.top: checkBox1.bottom
+                                    anchors.leftMargin: 0
+                                    anchors.topMargin: 0
+                                    font.pixelSize: 24
+                                }
+
+                                CheckBox {
+                                    id: checkBox7
+                                    x: -30
+                                    y: 63
+                                    text: qsTr("Französisch")
+                                    anchors.left: parent.left
+                                    anchors.top: checkBox6.bottom
+                                    anchors.leftMargin: 0
+                                    anchors.topMargin: 0
+                                    font.pixelSize: 24
+                                }
+
+                                CheckBox {
+                                    id: checkBox8
+                                    x: -30
+                                    y: 103
+                                    text: qsTr("Russisch")
+                                    anchors.left: parent.left
+                                    anchors.top: checkBox7.bottom
+                                    anchors.leftMargin: 0
+                                    anchors.topMargin: 0
+                                    font.pixelSize: 24
+                                }
+
+                                CheckBox {
+                                    id: checkBox9
+                                    x: -30
+                                    text: qsTr("Latein")
+                                    anchors.left: parent.left
+                                    anchors.top: checkBox8.bottom
+                                    anchors.leftMargin: 0
+                                    anchors.topMargin: 0
+                                    font.pixelSize: 24
+                                }
+                            }
+                        }
+
+
                     }
 
-                    CheckBox {
-                        id: checkBox1
-                        text: qsTr("Deutsch")
-                        anchors.left: parent.left
-                        anchors.top: parent.top
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 60
-                        font.pixelSize: 22
-                    }
-
-                    CheckBox {
-                        id: checkBox2
-                        text: qsTr("Englisch")
-                        anchors.left: parent.left
-                        anchors.top: parent.top
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 100
-                        font.pixelSize: 22
-                    }
-
-                    CheckBox {
-                        id: checkBox3
-                        text: qsTr("Biologie")
-                        anchors.left: parent.left
-                        anchors.top: parent.top
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 140
-                        font.pixelSize: 22
-                    }
-
-                    CheckBox {
-                        id: checkBox4
-                        text: qsTr("Chemie")
-                        anchors.left: parent.left
-                        anchors.top: parent.top
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 180
-                        font.pixelSize: 22
-                    }
                 }
 
 
@@ -569,15 +746,6 @@ Item {
         // Component für die Abiturnote-Seite
         Component {
             id: abiturnotePage
-            Rectangle {
-                anchors.fill: parent
-                radius: 20
-                Text {
-                    text: "Abiturnote Content"
-                    anchors.centerIn: parent
-                    font.pixelSize: 32
-                }
-            }
         }
 
 
