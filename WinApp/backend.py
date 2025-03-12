@@ -2,21 +2,19 @@ from PySide6.QtCore import QObject, Signal, Slot, QTimer
 from edupage_connect import EdupageAPI
 from datetime import datetime
 from edupage_api import Term, Grades
+from variables import Variables
 
 # Backend Klasse in QML verfügbar
+
 class Backend(QObject):
+    _instance = None
 
     # Globale Signale
     loginAttention = Signal()
     loginSuccess = Signal(bool)
     sendData = Signal(str, str)
 
-    # Globale Variablen (von außen erreichbar OOP)
-    schoolClass = 12
-    schoolHalf = Term.SECOND
-    schoolClassSelected = False
-    schoolYear = 2024
-    lastMonths = 3
+    variables = Variables()
 
     def __init__(self):
         super().__init__()
@@ -38,16 +36,16 @@ class Backend(QObject):
         grade_instance = Grades(edupage.edupage)
 
         if edupage.isLoggedIn():
-            if len(grade_instance.get_grades(term=self.schoolHalf, year=datetime.now().year)) > 0:
-                self.schoolYear = int(datetime.now().year)
-            elif len(grade_instance.get_grades(term=self.schoolHalf, year=(int(datetime.now().year) - 1))) > 0:
-                self.schoolYear = int(datetime.now().year) - 1
+            if len(grade_instance.get_grades(term=self.variables.schoolHalf, year=datetime.now().year)) > 0:
+                self.variables.schoolYear = int(datetime.now().year)
+            elif len(grade_instance.get_grades(term=self.variables.schoolHalf, year=(int(datetime.now().year) - 1))) > 0:
+                self.variables.schoolYear = int(datetime.now().year) - 1
         
         if edupage.isLoggedIn():
             print("Edupage logged in!")
             self.loginSuccess.emit(True)
-            QTimer.singleShot(400, lambda: self.sendDataToQML("chart", edupage.getMarkHistory(months=3, year=self.schoolYear, term=self.schoolHalf)))
-            QTimer.singleShot(400, lambda: self.sendDataToQML("average", str(edupage.getAverage(self.schoolYear, self.schoolHalf))))
+            QTimer.singleShot(400, lambda: self.sendDataToQML("chart", edupage.getMarkHistory(months=3, year=self.variables.schoolYear, term=self.variables.schoolHalf)))
+            QTimer.singleShot(400, lambda: self.sendDataToQML("average", str(edupage.getAverage(self.variables.schoolYear, self.variables.schoolHalf))))
         else:
             print("Edupage login failed!")
             self.loginSuccess.emit(False)
@@ -57,10 +55,10 @@ class Backend(QObject):
     def getMarkStatistic(self, months):
         edupage = EdupageAPI()
         if months == 0:
-            self.sendDataToQML("chart", edupage.getMarkHistory(months=self.lastMonths, year=self.schoolYear, term=self.schoolHalf))
+            self.sendDataToQML("chart", edupage.getMarkHistory(months=self.variables.lastMonths, year=self.variables.schoolYear, term=self.variables.schoolHalf))
         else:
-            self.lastMonths = months
-            self.sendDataToQML("chart", edupage.getMarkHistory(months=months, year=self.schoolYear, term=self.schoolHalf))
+            self.variables.lastMonths = months
+            self.sendDataToQML("chart", edupage.getMarkHistory(months=months, year=self.variables.schoolYear, term=self.variables.schoolHalf))
 
     # Daten an QML senden
     def sendDataToQML(self, usage, data):
@@ -80,13 +78,13 @@ class Backend(QObject):
     # Klassenänderung empfangen
     @Slot(str)
     def noteClass(self, selection):
-        if not self.schoolClassSelected:
-            self.schoolClassSelected = True
+        if not self.variables.schoolClassSelected:
+            self.variables.schoolClassSelected = True
 
-        self.schoolClass = int(selection.split("/")[0])
-        self.schoolHalf = Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND
+        self.variables.schoolClass = int(selection.split("/")[0])
+        self.variables.schoolHalf = Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND
 
-        if self.schoolClass == 12 or self.schoolClass == 11:
+        if self.variables.schoolClass == 12 or self.variables.schoolClass == 11:
             self.sendDataToQML("chart_scale", "15")
         else:
             self.sendDataToQML("chart_scale", "6")

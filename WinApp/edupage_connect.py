@@ -1,7 +1,5 @@
 from edupage_api import Edupage
 from edupage_api.exceptions import BadCredentialsException, CaptchaException
-from edupage_api import Grades
-from edupage_api import Term
 import math
 import re
 import json
@@ -9,7 +7,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from edupage_api import Grades, Term
-from backend import Backend
+from variables import Variables
 
 # EdupageAPI Klasse als Singleton (ein Element, immer wieder aufrufbar)
 class EdupageAPI(Edupage):
@@ -54,16 +52,16 @@ class EdupageAPI(Edupage):
         
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
-        backend = Backend()
-        if not backend.schoolClassSelected:
+        variables = Variables()
+        if not variables.schoolClassSelected:
             print("Kein Schuljahr eingegeben")
             return None
 
-        klasse = backend.schoolClass
-        school_year_edupage = backend.schoolYear
+        klasse = variables.schoolClass
+        school_year_edupage = variables.schoolYear
 
         # BERARBEITEN MIT JANNICK
-        # Hier muss nochmal eine Bearbeitung stattfinden. 
+        # Hier muss nochmal eine Bearbeitung stattfinden.
         if klasse == 11:
             start_year = school_year_edupage
         elif klasse == 12:
@@ -319,9 +317,8 @@ class EdupageAPI(Edupage):
 
         # Ausgabe als JSON-String für QML Diagramm
         return json.dumps(output)
-    
 
-# Objekt der EdupageAPI-Klasse erstellen
+"""# Objekt der EdupageAPI-Klasse erstellen
 edupage_instance = EdupageAPI()
 
 # Mit Benutzerdaten anmelden (ersetze durch echte Daten)
@@ -340,5 +337,4 @@ if edupage_instance.isLoggedIn():
 
     print(result)
 else:
-    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")
-
+    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")"""
