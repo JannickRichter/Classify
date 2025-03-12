@@ -78,8 +78,7 @@ class Backend(QObject):
     # Klassenänderung empfangen
     @Slot(str)
     def noteClass(self, selection):
-        if not self.variables.schoolClassSelected:
-            self.variables.schoolClassSelected = True
+        self.variables.setClassSelected(True)
 
         self.variables.schoolClass = int(selection.split("/")[0])
         self.variables.schoolHalf = Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND

@@ -55,9 +55,9 @@ class EdupageAPI(Edupage):
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         variables = Variables()
-        if not variables.schoolClassSelected:
+        """if not variables.schoolClassSelected:
             print("Kein Schuljahr eingegeben")
-            return None
+            return None"""
 
         klasse = variables.schoolClass
         school_year_edupage = variables.schoolYear
@@ -361,7 +361,7 @@ class EdupageAPI(Edupage):
         # Ausgabe als JSON-String für QML Diagramm
         return json.dumps(output)
 
-#Objekt der EdupageAPI-Klasse erstellen
+"""#Objekt der EdupageAPI-Klasse erstellen
 edupage_instance = EdupageAPI()
 
 # Mit Benutzerdaten anmelden (ersetze durch echte Daten)
@@ -386,4 +386,4 @@ if edupage_instance.isLoggedIn():
 
     print(result)
 else:
-    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")
+    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")"""

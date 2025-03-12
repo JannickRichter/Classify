@@ -12,3 +12,6 @@ class Variables():
 
     def __init__(self):
         super().__init__()
+
+    def setClassSelected(self, state: bool):
+        self.schoolClassSelected = state
