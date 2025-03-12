@@ -222,21 +222,10 @@ class EdupageAPI(Edupage):
         abitur_punkte = round(block1 + block2, 0) # Summe der Punkte aus Block1 und Block2
         print("Abiturpunkte" + str(abitur_punkte))
 
-<<<<<<< HEAD
-
-        """# Berechnung des Notenschnitts
-        noten_counter = 4.0 # Mindestduchschnitt
-        x = 300 # Mindestpunktzahl für das Abitur
-        noten_grenze = 
-        if abitur_punkte < 823:
-            
-            while abitur_punkte 
-=======
         # Berechnung des Notenschnitts
         abitur_note = 4.0 # Mindestduchschnitt
         x = 0 # Mindestpunktzahl für das Abitur
         noten_grenze = 300 + 17 * x + x
->>>>>>> 4b716f0874381172c6be1f8a7c8c44daa8298c1d
 
         if abitur_punkte <= 822:
             while noten_grenze <= abitur_punkte:
@@ -246,12 +235,8 @@ class EdupageAPI(Edupage):
                 noten_grenze = 300 + 17 * x + x
                 abitur_note -= 0.1
 
-<<<<<<< HEAD
-        # Führt Schleife für alle Prüfungen durch"""
-=======
         else:
             noten_counter = 1.0
->>>>>>> 4b716f0874381172c6be1f8a7c8c44daa8298c1d
 
         abitur_note = round(abitur_note, 1)
     
