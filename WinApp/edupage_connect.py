@@ -84,7 +84,7 @@ class EdupageAPI(Edupage):
                 total_grades = sum(len(notes) for notes in subject_grades.values())  # Gesamtanzahl der Noten
                 total_subjects = len(subject_grades)  # Anzahl der Fächer
 
-                if total_grades < 2 * total_subjects:
+                if total_grades < 3 * total_subjects:
                     print(f"Nicht genügend Noten für {year} {term} vorhanden.")
                     continue  # Halbjahr wird übersprungen
 
@@ -144,7 +144,6 @@ class EdupageAPI(Edupage):
 
             # Endgültiges Dictionary speichern
             final_grades[subject] = dict(sorted(term_dict.items(), key=lambda x: (x[0][0], x[0][1].value)))
-
         # Dictionary, das speichert, wie viele Noten pro Fach bereits gestrichen wurden
         removed_count_per_subject = defaultdict(int)
 
