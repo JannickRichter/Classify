@@ -45,7 +45,7 @@ class EdupageAPI(Edupage):
     def isLoggedIn(self):
         return self.loggedIn
 
-    def getAbiGrade(self, sub1, sub2, sub3, sub4, sub5, semi_mark=None):
+    def getAbiGrade(self, sub1, sub2, sub3, sub4, sub5=None, semi_mark=None):
         if not self.loggedIn: # Ist Benutzer eingelogt?
             print("Not logged in Edupage!")
             return None
