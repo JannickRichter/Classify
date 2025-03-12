@@ -414,9 +414,8 @@ Item {
         Component {
             id: abiturnotePage
             
-            Rectangle {
+            Item {
                 id: abiturnoteWrapper
-                color: ffffff
                 anchors.fill: parent
 
                 Item {
