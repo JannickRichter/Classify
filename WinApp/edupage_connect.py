@@ -55,7 +55,9 @@ class EdupageAPI(Edupage):
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         backend = Backend()
-        if not backend.school
+        if not backend.schoolClassSelected:
+            print("Kein Schuljahr eingegeben")
+            return None
 
         klasse = backend.schoolClass
         school_year_edupage = backend.schoolYear
