@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from edupage_api import Grades, Term
+from backend import Backend
 
 # EdupageAPI Klasse als Singleton (ein Element, immer wieder aufrufbar)
 class EdupageAPI(Edupage):
@@ -46,12 +47,18 @@ class EdupageAPI(Edupage):
     def isLoggedIn(self):
         return self.loggedIn
 
-    def getAbiGrade(self, klasse: int, school_year_edupage: int):
+    def getAbiGrade(self):
         if not self.loggedIn: # Ist Benutzer eingelogt?
             print("Not logged in Edupage!")
             return None
         
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
+
+        backend = Backend()
+        if not backend.school
+
+        klasse = backend.schoolClass
+        school_year_edupage = backend.schoolYear
 
         # BERARBEITEN MIT JANNICK
         # Hier muss nochmal eine Bearbeitung stattfinden. 
