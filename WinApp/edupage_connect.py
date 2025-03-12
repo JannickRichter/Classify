@@ -50,6 +50,8 @@ class EdupageAPI(Edupage):
             print("Not logged in Edupage!")
             return None
         
+
+        #Berechnung Block 1
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         variables = Variables()
@@ -188,14 +190,29 @@ class EdupageAPI(Edupage):
 
         print(final_grades["MA"])
 
-
+        # Berechnung des Block2
         exam1 = "MA"
         exam2 = sub2
         exam3 = sub3
         exam4 = sub4
         exam5 = sub5
-        
+        semi_mark = semi_mark
+
+        # 
+
+        exam = [exam1, exam2, exam3, exam4]
+
+        block2 = 0
+
+        # Führt Schleife für alle Prüfungen durch
+        for i in range(5):
+            for i in range(4):
+                actuel_note = total_grades.get(  + i + 1)
+
         print(final_grades[exam1])
+
+        #wenn semi existiert, dann block2 + semi_mark
+        #else exam5 Durchschnitt aus allen Halbjahren
 
 
 
@@ -322,8 +339,8 @@ class EdupageAPI(Edupage):
 edupage_instance = EdupageAPI()
 
 # Mit Benutzerdaten anmelden (ersetze durch echte Daten)
-username = "ErikThrum"
-password = "1Hans!!!"
+username = ""
+password = ""
 school = "duden-gymn"
 edupage_instance.login(username, password, school)
 
