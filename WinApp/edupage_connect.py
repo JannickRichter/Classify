@@ -192,7 +192,6 @@ class EdupageAPI(Edupage):
 
         return final_grades
     
-    
     # Durchschnitt in Abhängigkeit von Jahr und Halbjahr berechnen
     def getAverage(self, year: int, term: Term):
         if not self.loggedIn:
