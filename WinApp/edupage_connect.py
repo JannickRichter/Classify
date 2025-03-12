@@ -173,30 +173,25 @@ class EdupageAPI(Edupage):
                     
                     print(f"Entfernt: Note {worst_grade} aus {worst_subject} ({year}, {term})")
 
-        #return final_grades
-
         # Summe der Halbjahresergebnisse pro Fach 
         total_points_per_subject = {subject: sum(grades.values()) for subject, grades in final_grades.items()}
 
-        # Gesamtpunktzahl in allen Fächern
-        block1 = sum(total_points_per_subject.values())
-
+        weighted_points = 0  # Punkte mit Gewichtung
         
         print("\nGesamtpunktzahl pro Fach:")
         for subject, points in total_points_per_subject.items():
-            if subject.isupper:
-                print("Fach: " + subject)
+            if subject.isupper():
+                weighted_points += points * 2  # Leistungskurse doppelt gewichten
 
-            if subject.islower:
-                print(subject)
+            if subject.islower():
+                weighted_points += points # Grundkurse einfach gewichten
 
             print(f"{subject}: {points} Punkte")
-        
-        
 
-        print(f"\nGesamtpunktzahl für das Abitur: {block1} Punkte")
+        block1 = 40 * weighted_points / 56
 
-        print(final_grades["MA"])
+        # Gesamtpunktzahl in allen Fächern
+        #block1 = sum(total_points_per_subject.values())
 
         # Berechnung des Block2
         exam1 = sub1
@@ -227,11 +222,17 @@ class EdupageAPI(Edupage):
             print("Fächer des Fachs:" + str(i))
             print('Note nach: ' + str(i) + ' ' + str(block2))
 
-        abitur_punkte = block1 + block2 # Summe der Punkte aus Block1 und Block2
+        abitur_punkte = round(block1 + block2, 0) # Summe der Punkte aus Block1 und Block2
         print("Abiturpunkte" + str(abitur_punkte))
 
+
+        # Berechnung des Notenschnitts
         noten_counter = 4.0 # Mindestduchschnitt
         x = 300 # Mindestpunktzahl für das Abitur
+        noten_grenze = 
+        if abitur_punkte < 823:
+            
+            while abitur_punkte 
 
 
         # Führt Schleife für alle Prüfungen durch
