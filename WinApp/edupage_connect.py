@@ -226,7 +226,7 @@ class EdupageAPI(Edupage):
         print("Abiturpunkte" + str(abitur_punkte))
 
 
-        # Berechnung des Notenschnitts
+        """# Berechnung des Notenschnitts
         noten_counter = 4.0 # Mindestduchschnitt
         x = 300 # Mindestpunktzahl für das Abitur
         noten_grenze = 
@@ -235,7 +235,7 @@ class EdupageAPI(Edupage):
             while abitur_punkte 
 
 
-        # Führt Schleife für alle Prüfungen durch
+        # Führt Schleife für alle Prüfungen durch"""
 
         print(final_grades[exam1])
 
