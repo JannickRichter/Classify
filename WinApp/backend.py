@@ -90,3 +90,12 @@ class Backend(QObject):
             self.sendDataToQML("chart_scale", "15")
         else:
             self.sendDataToQML("chart_scale", "6")
+
+    # Abischnitt Signal empfangen
+    @Slot(str, str, str, str, str, int)
+    def getAbiMark(self, sub1, sub2, sub3, sub4, sub5, semi_mark):
+        edupage = EdupageAPI()
+        if semi_mark == -1:
+            edupage.getAbiGrade(sub1, sub2, sub3, sub4, sub5)
+        else:
+            edupage.getAbiGrade(sub1, sub2, sub3, sub4, sub5, semi_mark)
