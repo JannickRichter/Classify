@@ -14,6 +14,7 @@ class Backend(QObject):
     # Globale Variablen (von außen erreichbar OOP)
     schoolClass = 12
     schoolHalf = Term.SECOND
+    schoolClassSelected = False
     schoolYear = 2024
     lastMonths = 3
 
@@ -79,6 +80,9 @@ class Backend(QObject):
     # Klassenänderung empfangen
     @Slot(str)
     def noteClass(self, selection):
+        if not self.schoolClassSelected:
+            self.schoolClassSelected = True
+
         self.schoolClass = int(selection.split("/")[0])
         self.schoolHalf = Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND
 
