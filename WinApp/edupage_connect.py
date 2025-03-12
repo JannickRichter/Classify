@@ -126,7 +126,7 @@ class EdupageAPI(Edupage):
         for subject, term_dict in final_grades.items():
             # Alle vorhandenen Noten sammeln
             all_grades = list(term_dict.values())  # Hier sind die Halbjahresnoten als Liste
-
+            print(all_grades)
             # Fehlende Noten durch den Durchschnitt ersetzen
             while len(all_grades) < 4:
                 if all_grades:  # Falls schon Noten vorhanden sind, berechne den Durchschnitt
@@ -189,6 +189,17 @@ class EdupageAPI(Edupage):
         print(f"\nGesamtpunktzahl für das Abitur: {total_abi_points} Punkte")
 
         print(final_grades["MA"])
+
+
+        exam1 = "MA"
+        exam2 = sub2
+        exam3 = sub3
+        exam4 = sub4
+        exam5 = sub5
+        
+        print(final_grades[exam1])
+
+
 
         return final_grades
     
@@ -314,9 +325,9 @@ class EdupageAPI(Edupage):
 edupage_instance = EdupageAPI()
 
 # Mit Benutzerdaten anmelden (ersetze durch echte Daten)
-username = ""
-password = ""
-school = ""
+username = "ErikThrum"
+password = "1Hans!!!"
+school = "duden-gymn"
 edupage_instance.login(username, password, school)
 
 # Falls erfolgreich eingeloggt, getAbiGrade ausführen
