@@ -55,9 +55,9 @@ class EdupageAPI(Edupage):
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         variables = Variables()
-        if not variables.schoolClassSelected:
+        '''if not variables.schoolClassSelected:
             print("Kein Schuljahr eingegeben")
-            return None
+            return None'''
 
         klasse = variables.schoolClass
         school_year_edupage = variables.schoolYear
@@ -244,6 +244,12 @@ class EdupageAPI(Edupage):
 
         #return final_grades
     
+
+    def getEduPageName(self, subject, sub1, sub2, sub3, sub4, sub5):
+        if sub1 == 'Mathematik':
+            if 'MA' in subject:
+                sub1 = 'MA'
+
     # Durchschnitt in Abhängigkeit von Jahr und Halbjahr berechnen
     def getAverage(self, year: int, term: Term):
         if not self.loggedIn:
