@@ -78,8 +78,7 @@ class Backend(QObject):
     # Klassenänderung empfangen
     @Slot(str)
     def noteClass(self, selection):
-        if not self.variables.schoolClassSelected:
-            self.variables.schoolClassSelected = True
+        self.variables.setClassSelected(True)
 
         self.variables.schoolClass = int(selection.split("/")[0])
         self.variables.schoolHalf = Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND
@@ -92,8 +91,9 @@ class Backend(QObject):
     # Abischnitt Signal empfangen
     @Slot(str, str, str, str, str, int)
     def getAbiMark(self, sub1, sub2, sub3, sub4, sub5, semi_mark):
+
         edupage = EdupageAPI()
         if semi_mark == -1:
-            edupage.getAbiGrade(sub1, sub2, sub3, sub4, sub5)
+            edupage.getAbiGrade(sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, sub5=sub5)
         else:
             edupage.getAbiGrade(sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, semi_mark=semi_mark)

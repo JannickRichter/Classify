@@ -544,7 +544,6 @@ Item {
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
                                     font.underline: false
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -557,7 +556,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -570,7 +568,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -583,7 +580,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -595,7 +591,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -607,7 +602,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
                             }
 
@@ -660,7 +654,6 @@ Item {
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
                                     font.underline: false
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -673,7 +666,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -686,7 +678,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -699,7 +690,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -711,7 +701,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -723,7 +712,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
                             }
                         }
@@ -770,7 +758,6 @@ Item {
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
                                     font.underline: false
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -783,7 +770,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -796,7 +782,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -809,7 +794,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -821,7 +805,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -833,7 +816,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
                             }
                         }
@@ -879,7 +861,6 @@ Item {
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
                                     font.underline: false
-                                    cursorShape: Qt.PointingHandCursor
                                 }
 
                                 CheckBox {
@@ -892,7 +873,6 @@ Item {
                                     anchors.leftMargin: 0
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
-                                    cursorShape: Qt.PointingHandCursor
                                 }
                             }
                         }
@@ -939,7 +919,6 @@ Item {
                                     anchors.topMargin: 0
                                     font.pixelSize: 24
                                     font.underline: false
-                                    cursorShape: Qt.PointingHandCursor
                                     onCheckedChanged: {
                                         if (checked) {
                                             rectangle12.visible = true;
@@ -965,7 +944,7 @@ Item {
 
                                     TextInput {
                                         id: textInput
-                                        text: qsTr("Wert")
+                                        text: qsTr("")
                                         anchors.fill: parent
                                         font.pixelSize: 24
                                         horizontalAlignment: Text.AlignHCenter
@@ -1007,6 +986,37 @@ Item {
                             }
                             onExited: {
                                 parent.color = "#a17c6b";
+                            }
+
+                            onClicked: {
+                                var checkedItems = []; // Liste für ausgewählte Checkboxen
+                                var checkBoxes = []
+
+                                if (checkBox.checked) {
+                                    checkedItems.push(checkBox.text);
+                                }
+
+                                // Alle Objekte der QML-Hierarchie durchlaufen
+                                for (var i = 1; i <= 20; i++) {
+                                    var item = eval("checkBox" + i);
+
+                                    // Prüfen, ob die ID "checkBox" enthält und ob das Element eine Checkbox ist
+                                    if (item.checked) {
+                                        checkedItems.push(item.text);
+                                    }
+                                }
+
+                                console.log(checkedItems)
+
+                                if (checkedItems.length != 5) {
+                                    return;
+                                }
+
+                                if (checkedItems.includes("Eingebracht:")) {
+                                    backend.getAbiMark(checkedItems[0], checkedItems[1], checkedItems[2], checkedItems[3], checkedItems[4], parseInt(textInput.text))
+                                } else {
+                                    backend.getAbiMark(checkedItems[0], checkedItems[1], checkedItems[2], checkedItems[3], checkedItems[4], -1)
+                                }
                             }
                         }
 
