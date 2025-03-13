@@ -361,10 +361,10 @@ class EdupageAPI(Edupage):
         # Ausgabe als JSON-String für QML Diagramm
         return json.dumps(output)
 
-"""#Objekt der EdupageAPI-Klasse erstellen
+#Objekt der EdupageAPI-Klasse erstellen
 edupage_instance = EdupageAPI()
 
-# Mit Benutzerdaten anmelden (ersetze durch echte Daten)
+"""# Mit Benutzerdaten anmelden (ersetze durch echte Daten)
 username = ""
 password = ""
 school = "duden-gymn"
@@ -378,9 +378,9 @@ if edupage_instance.isLoggedIn():
     sub2 = "WR"
     sub3 = "EN"
     sub4 = "if"
-    sub5 = 'ge'
+    sub5 = None
 
-    semi_mark = None
+    semi_mark = 14
     # Notenberechnung starten
     result = edupage_instance.getAbiGrade(sub1, sub2, sub3, sub4, sub5, semi_mark)
 

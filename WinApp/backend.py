@@ -94,6 +94,6 @@ class Backend(QObject):
 
         edupage = EdupageAPI()
         if semi_mark == -1:
-            edupage.getAbiGrade(sub1, sub2, sub3, sub4, sub5)
+            edupage.getAbiGrade(sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, sub5=sub5)
         else:
             edupage.getAbiGrade(sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, semi_mark=semi_mark)
