@@ -55,9 +55,9 @@ class EdupageAPI(Edupage):
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         variables = Variables()
-        if not variables.schoolClassSelected:
+        '''if not variables.schoolClassSelected:
             print("Kein Schuljahr eingegeben")
-            return None
+            return None'''
 
         klasse = variables.schoolClass
         school_year_edupage = variables.schoolYear
@@ -174,7 +174,7 @@ class EdupageAPI(Edupage):
         total_points_per_subject = {subject: sum(grades.values()) for subject, grades in final_grades.items()}
 
         weighted_points = 0  # Punkte mit Gewichtung
-        
+        faecher = []
         print("\nGesamtpunktzahl pro Fach:")
         for subject, points in total_points_per_subject.items():
             if subject.isupper():
@@ -182,20 +182,21 @@ class EdupageAPI(Edupage):
 
             if subject.islower():
                 weighted_points += points # Grundkurse einfach gewichten
-
+            faecher.append(subject)
             print(f"{subject}: {points} Punkte")
 
         block1 = 40 * weighted_points / 56
 
+        sub1 = 'Mathematik'
         # Gesamtpunktzahl in allen Fächern
         #block1 = sum(total_points_per_subject.values())
-
+        noten = self.getEduPageName(faecher, sub1, sub2, sub3, sub4, sub5)
         # Berechnung des Block2
-        exam1 = sub1
-        exam2 = sub2
-        exam3 = sub3
-        exam4 = sub4
-        exam5 = sub5
+        exam1 = noten[0]
+        exam2 = noten[1]
+        exam3 = noten[2]
+        exam4 = noten[3]
+        exam5 = noten[4]
 
         semi_mark = semi_mark
 
@@ -245,10 +246,27 @@ class EdupageAPI(Edupage):
         #return final_grades
     
 
-    def getEduPageName(self, subject, sub1, sub2, sub3, sub4, sub5):
+    def getEduPageName(self, faecher, sub1, sub2, sub3, sub4, sub5 = None):
+        
+        
         if sub1 == 'Mathematik':
-            if 'MA' in subject:
+            print(faecher)
+            if 'MA' in faecher:
                 sub1 = 'MA'
+                print('Habicht' + str(sub1))
+            elif 'ma' in faecher:
+                sub5 = 'ma'
+                print(sub1)
+            print(sub1)
+        if sub2 == 'Wirtschaft':
+            if 'WR' in faecher:
+                sub2 = 'WR'
+            elif 'wr' in faecher:
+                sub5 = 'wr'
+            print(sub2)
+        
+        return [sub1, sub2, sub3, sub4, sub5]
+           
 
     # Durchschnitt in Abhängigkeit von Jahr und Halbjahr berechnen
     def getAverage(self, year: int, term: Term):
@@ -370,9 +388,9 @@ class EdupageAPI(Edupage):
 #Objekt der EdupageAPI-Klasse erstellen
 edupage_instance = EdupageAPI()
 
-"""# Mit Benutzerdaten anmelden (ersetze durch echte Daten)
-username = ""
-password = ""
+# Mit Benutzerdaten anmelden (ersetze durch echte Daten)
+username = "ErikThrum"
+password = "1Hans!!!"
 school = "duden-gymn"
 edupage_instance.login(username, password, school)
 
@@ -392,4 +410,4 @@ if edupage_instance.isLoggedIn():
 
     print(result)
 else:
-    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")"""
+    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")
