@@ -55,9 +55,9 @@ class EdupageAPI(Edupage):
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         variables = Variables()
-        '''if not variables.schoolClassSelected:
+        if not variables.schoolClassSelected:
             print("Kein Schuljahr eingegeben")
-            return None'''
+            return None
 
         klasse = variables.schoolClass
         school_year_edupage = variables.schoolYear
@@ -185,12 +185,14 @@ class EdupageAPI(Edupage):
             faecher.append(subject)
             print(f"{subject}: {points} Punkte")
 
-        block1 = 40 * weighted_points / 56
+        block1 = 40 * weighted_points / 56 # Gewichtung der nun vorhanden 56 Halbjahresergebnisse auf 40 Halkbjahresergebnisse herunterbrechen
 
-        sub1 = 'Mathematik'
         # Gesamtpunktzahl in allen Fächern
         #block1 = sum(total_points_per_subject.values())
+
+        # Namen aus der UI müssen in die Edupage Namen umgewandelt werden
         noten = self.getEduPageName(faecher, sub1, sub2, sub3, sub4, sub5)
+
         # Berechnung des Block2
         exam1 = noten[0]
         exam2 = noten[1]
@@ -200,8 +202,7 @@ class EdupageAPI(Edupage):
 
         semi_mark = semi_mark
 
-        exam = [exam1, exam2, exam3, exam4]
-        print("Examen Noten:" + str(exam))
+        exam = [exam1, exam2, exam3, exam4] # Prüfungen die jeder hat
         block2 = 0.0
 
         if exam5 == None: # Wenn Seminarfach existiert
@@ -213,9 +214,9 @@ class EdupageAPI(Edupage):
             block2 = block2 + sum(pruefung_grade.values())
 
         for i in exam: # Schleife für alle 4 Pflichtprüfungen -- Aufbau ist der selbe wie oben
-            pruefung_grade = {} 
-            pruefung_grade = final_grades.get(i, {})
-            block2 = block2 + sum(pruefung_grade.values())
+            pruefung_grade = {} # leeres Dictionary
+            pruefung_grade = final_grades.get(i, {}) # Alle halbjahresnoten des jeweiligen Faches zum Dictionary hinzufügen
+            block2 = block2 + sum(pruefung_grade.values()) # Summe der Halbjahresergebnisse
             final_grades[i]
             print("Fächer des Fachs:" + str(i))
             print('Note nach: ' + str(i) + ' ' + str(block2))
@@ -228,15 +229,17 @@ class EdupageAPI(Edupage):
         x = 0 # Mindestpunktzahl für das Abitur
         noten_grenze = 300 + 17 * x + x
 
-        if abitur_punkte <= 822:
+        if abitur_punkte <= 822: 
             while noten_grenze <= abitur_punkte:
+                # Die Schleife wird solange durchlaufen bis die Notengrrenze gleich oder kleiner als die Abipunkte sind
+                # Der Durchschnitt erhöht sich immer um 0,1, wenn sich die Notengrenze um 17 + x erhöht
                 if noten_grenze == abitur_punkte:
                     abitur_note += 0.1
                 x += 1
                 noten_grenze = 300 + 17 * x + x
                 abitur_note -= 0.1
 
-        else:
+        else: # ab einer Punktzahl von 823 hat man einen Durchschnitt von 1.0
             noten_counter = 1.0
 
         abitur_note = round(abitur_note, 1)
@@ -247,18 +250,18 @@ class EdupageAPI(Edupage):
     
 
     def getEduPageName(self, faecher, sub1, sub2, sub3, sub4, sub5 = None):
-        
-        subjects = [sub1, sub2, sub3, sub4, sub5]
-        edupage_subjects = []
+        # Funktion um Namen aus der UI in die Edupage Namen umzuwandeln
+        subjects = [sub1, sub2, sub3, sub4, sub5] # Liste der UI Fächer
+        edupage_subjects = [] # Liste der Edupage Fächer
         
         # Naturwissenschaften
-        if 'Mathe' in subjects:
-            print(faecher)
-            if 'MA' in faecher:
-                edupage_subjects.append('MA')
-            elif 'ma' in faecher:
-                edupage_subjects.append('ma')
+        if 'Mathe' in subjects: # Wenn Fach (Mathe) in der Liste der UI-Fächer ist
+            if 'MA' in faecher: # Ist Fach (Mathe) Leistungskurs
+                edupage_subjects.append('MA') # Fach (Mathe) wird in die Liste der Edupage Fächer als Leistungskurs hinzugefügt
+            elif 'ma' in faecher: # Ist Fach (Mathe) Grundkurs
+                edupage_subjects.append('ma')  # Fach (Mathe) wird in die Liste der Edupage Fächer als Grundkurs hinzugefügt
 
+        # Dies wird nun für alle Fächer durchgeführt
         if 'Physik' in subjects:
             if 'PH' in faecher:
                 edupage_subjects.append('PH')
@@ -335,10 +338,9 @@ class EdupageAPI(Edupage):
 
         if 'Wirtschaft' in subjects:
             if 'WR' in faecher:
-                sub2 = 'WR'
+                edupage_subjects.append('WR')
             elif 'wr' in faecher:
-                sub5 = 'wr'
-            print(sub2)
+                edupage_subjects.append('wr')
 
         if 'Geografie' in subjects:
             if 'GG' in faecher:
@@ -375,7 +377,7 @@ class EdupageAPI(Edupage):
                 edupage_subjects.append('MU')
             elif 'mu' in faecher:
                 edupage_subjects.append('mu')
-
+        
         sub1 = edupage_subjects[0]
         sub2 = edupage_subjects[1]
         sub3 = edupage_subjects[2]
@@ -509,9 +511,9 @@ class EdupageAPI(Edupage):
 #Objekt der EdupageAPI-Klasse erstellen
 edupage_instance = EdupageAPI()
 
-# Mit Benutzerdaten anmelden (ersetze durch echte Daten)
-username = "ErikThrum"
-password = "1Hans!!!"
+'''# Mit Benutzerdaten anmelden (ersetze durch echte Daten)
+username = ""
+password = ""
 school = "duden-gymn"
 edupage_instance.login(username, password, school)
 
@@ -531,4 +533,4 @@ if edupage_instance.isLoggedIn():
 
     print(result)
 else:
-    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")
+    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")'''
