@@ -248,23 +248,144 @@ class EdupageAPI(Edupage):
 
     def getEduPageName(self, faecher, sub1, sub2, sub3, sub4, sub5 = None):
         
+        subjects = [sub1, sub2, sub3, sub4, sub5]
+        edupage_subjects = []
         
-        if sub1 == 'Mathematik':
+        # Naturwissenschaften
+        if 'Mathe' in subjects:
             print(faecher)
             if 'MA' in faecher:
-                sub1 = 'MA'
-                print('Habicht' + str(sub1))
+                edupage_subjects.append('MA')
             elif 'ma' in faecher:
-                sub5 = 'ma'
-                print(sub1)
-            print(sub1)
-        if sub2 == 'Wirtschaft':
+                edupage_subjects.append('ma')
+
+        if 'Physik' in subjects:
+            if 'PH' in faecher:
+                edupage_subjects.append('PH')
+            elif 'ph' in faecher:
+                edupage_subjects.append('ph')
+
+        if 'Chemie' in subjects:
+            if 'CH' in faecher:
+                edupage_subjects.append('CH')
+            elif 'ch' in faecher:
+                edupage_subjects.append('ch')
+
+        if 'Biologie' in subjects:
+            if 'BI' in faecher:
+                edupage_subjects.append('BI')
+            elif 'bi' in faecher:
+                edupage_subjects.append('bi')
+
+        if 'Astronomie' in subjects:
+            if 'AS' in faecher:
+                edupage_subjects.append('AS')
+            elif 'as' in faecher:
+                edupage_subjects.append('as')
+
+        if 'Informatik' in subjects:
+            if 'IF' in faecher:
+                edupage_subjects.append('IF')
+            elif 'if' in faecher:
+                edupage_subjects.append('if')
+
+        # Sprachen
+        if 'Deutsch' in subjects:
+            if 'DE' in faecher:
+                edupage_subjects.append('DE')
+            elif 'de' in faecher:
+                edupage_subjects.append('de')
+
+        if 'Englisch' in subjects:
+            if 'EN' in faecher:
+                edupage_subjects.append('EN')
+            elif 'en' in faecher:
+                edupage_subjects.append('en') 
+
+        if 'Französisch' in subjects:
+            if 'FR' in faecher:
+                edupage_subjects.append('FR')
+            elif 'fr' in faecher:
+                edupage_subjects.append('fr')
+
+        if 'Russisch' in subjects:
+            if 'RU' in faecher:
+                edupage_subjects.append('RU')
+            elif 'ru' in faecher:
+                edupage_subjects.append('ru')
+
+        if 'Latein' in subjects:
+            if 'LA' in faecher:
+                edupage_subjects.append('LA')
+            elif 'la' in faecher:
+                edupage_subjects.append('la')
+
+        if 'Italienisch' in subjects:
+            if 'IT' in faecher:
+                edupage_subjects.append('IT')
+            elif 'it' in faecher:
+                edupage_subjects.append('it')
+        
+        # Gesellschaftswissenschaften
+        if 'Geschichte' in subjects:
+            if 'GE' in faecher:
+                edupage_subjects.append('GE')
+            elif 'ge' in faecher:
+                edupage_subjects.append('ge')
+
+        if 'Wirtschaft' in subjects:
             if 'WR' in faecher:
                 sub2 = 'WR'
             elif 'wr' in faecher:
                 sub5 = 'wr'
             print(sub2)
-        
+
+        if 'Geografie' in subjects:
+            if 'GG' in faecher:
+                edupage_subjects.append('GG')
+            elif 'gg' in faecher:
+                edupage_subjects.append('gg') 
+
+        if 'Sozialkunde' in subjects:
+            if 'SK' in faecher:
+                edupage_subjects.append('SK')
+            elif 'sk' in faecher:
+                edupage_subjects.append('sk')
+
+        if 'Religion' in subjects:
+            if 'RE' in faecher:
+                edupage_subjects.append('RE')
+            elif 're' in faecher:
+                edupage_subjects.append('re')
+
+        if 'Ethik' in subjects:
+            if 'ET' in faecher:
+                edupage_subjects.append('ET')
+            elif 'et' in faecher:
+                edupage_subjects.append('et')
+
+        if 'Kunst' in subjects:
+            if 'KU' in faecher:
+                edupage_subjects.append('KU')
+            elif 'ku' in faecher:
+                edupage_subjects.append('ku')
+
+        if 'Musik' in subjects:
+            if 'MU' in faecher:
+                edupage_subjects.append('MU')
+            elif 'mu' in faecher:
+                edupage_subjects.append('mu')
+
+        sub1 = edupage_subjects[0]
+        sub2 = edupage_subjects[1]
+        sub3 = edupage_subjects[2]
+        sub4 = edupage_subjects[3]
+
+        if sub5 is not None:
+            sub5 = edupage_subjects[4]
+        else:
+            sub5 = None
+
         return [sub1, sub2, sub3, sub4, sub5]
            
 
