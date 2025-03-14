@@ -8,6 +8,7 @@ Item {
 
     // String für die Tab-Auswahl
     property string selector: "statistic"
+    property int classSelection: 0
 
     Image {
         id: background1
@@ -306,9 +307,11 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 model: ["12/2", "12/1", "11/2", "11/1", "10/2", "10/1", "9/2", "9/1", "8/2", "8/1", "7/2", "7/1"]
                                 font.pointSize: 20
+                                currentIndex: classSelection
                                 onActivated: {
                                     backend.noteClass(comboBox1.currentText);
                                     backend.getMarkStatistic(0);
+                                    classSelection = parseInt(comboBox1.currentIndex);
                                 }
                             }
                         }
@@ -457,9 +460,11 @@ Item {
                             anchors.horizontalCenter: parent.horizontalCenter
                             model: ["12/2", "12/1", "11/2", "11/1", "10/2", "10/1", "9/2", "9/1", "8/2", "8/1", "7/2", "7/1"]
                             font.pointSize: 20
+                            currentIndex: classSelection
                             onActivated: {
                                 backend.noteClass(comboBox1.currentText);
                                 backend.getMarkStatistic(0);
+                                classSelection = parseInt(comboBox1.currentIndex);
                             }
                         }
                     }
