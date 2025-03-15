@@ -6,12 +6,11 @@ class Variables():
     # Globale Variablen (von außen erreichbar OOP)
     schoolClass = 12
     schoolHalf = Term.SECOND
-    schoolClassSelected = False
     schoolYear = 2024
     lastMonths = 3
 
     def __init__(self):
         super().__init__()
 
-    def setClassSelected(self, state: bool):
-        self.schoolClassSelected = state
+    def setLastMonths(self, months):
+        self.lastMonths = months

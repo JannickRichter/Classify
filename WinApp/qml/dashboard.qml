@@ -9,6 +9,11 @@ Item {
     // String für die Tab-Auswahl
     property string selector: "statistic"
     property int classSelection: 0
+    property int sliderSelection: 3
+    property string averageSelection: "2024/2"
+    property int averageIndex: 0
+    property string noteAbitur: "-"
+    property string punkteAbitur: "-"
 
     Image {
         id: background1
@@ -135,7 +140,8 @@ Item {
                             rectangle3.color = "#a17c6b"
                             rectangle2.color = "#dbdbdb"
 
-                            backend.getMarkStatistic(3)
+                            backend.getMarkStatistic(0)
+                            backend.getAverage(averageSelection);
                         }
                     }
                 }
@@ -269,8 +275,12 @@ Item {
                                 anchors.bottomMargin: 8
                                 model: ["2024/2", "2024/1", "2023/2", "2023/1", "2022/2", "2022/1", "2021/2", "2021/1", "2020/2", "2020/1", "2019/2", "2019/1"]
                                 font.pointSize: 20
+                                currentIndex: averageIndex
+
                                 onActivated: {
                                     backend.getAverage(comboBox.currentText.toString());
+                                    averageSelection = comboBox.currentText.toString();
+                                    averageIndex = parseInt(currentIndex);
                                 }
                             }
                         }
@@ -336,7 +346,6 @@ Item {
 
                         Slider {
                             id: slider
-                            value: 3
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: _text2.right
                             anchors.right: _text3.left
@@ -346,9 +355,11 @@ Item {
                             stepSize: 1
                             to: 12
                             from: 1
+                            value: sliderSelection
 
                             onValueChanged: {
                                 _text3.text = slider.value + " Monat(e)";
+                                sliderSelection = parseInt(value);
                             }
                             onPressedChanged: {
                                 if (!pressed) {
@@ -359,7 +370,7 @@ Item {
 
                         Text {
                             id: _text3
-                            text: qsTr("3 Monat(e)")
+                            text: qsTr((sliderSelection.toString() + " Monat(e)"))
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right
                             anchors.rightMargin: 30
@@ -476,8 +487,8 @@ Item {
                     width: background1.width * 0.7
                     anchors.top: parent.top
                     anchors.bottom: row4.bottom
-                    anchors.topMargin: 50
-                    anchors.bottomMargin: 50
+                    anchors.topMargin: 30
+                    anchors.bottomMargin: 30
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     Text {
@@ -963,83 +974,182 @@ Item {
 
                     }
 
-                    Rectangle {
-                        id: rectangle13
-                        width: parent.width * 0.3
+                    Item {
+                        id: _item9
                         height: 70
-                        color: "#a17c6b"
-                        radius: 20
-                        border.width: 0
+                        anchors.left: parent.left
+                        anchors.right: parent.right
                         anchors.top: _item2.bottom
+                        anchors.leftMargin: 0
+                        anchors.rightMargin: 0
                         anchors.topMargin: 30
-                        anchors.horizontalCenter: parent.horizontalCenter
 
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 300  // Übergangsdauer in Millisekunden
-                            }
-                        }
+                        Rectangle {
+                            id: rectangle13
+                            x: 470
+                            y: 0
+                            width: (parent.width - 60) * 0.3
+                            height: 70
+                            color: "#a17c6b"
+                            radius: 20
+                            border.width: 0
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
 
-                        MouseArea {
-                            id: calculateButtonArea
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            hoverEnabled: true
-
-                            onEntered: {
-                                parent.color = "#5B7B7A";
-                            }
-                            onExited: {
-                                parent.color = "#a17c6b";
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 300  // Übergangsdauer in Millisekunden
+                                }
                             }
 
-                            onClicked: {
-                                var checkedItems = []; // Liste für ausgewählte Checkboxen
-                                var checkBoxes = []
+                            MouseArea {
+                                id: calculateButtonArea
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                hoverEnabled: true
 
-                                if (checkBox.checked) {
-                                    checkedItems.push(checkBox.text);
+                                onEntered: {
+                                    parent.color = "#5B7B7A";
+                                }
+                                onExited: {
+                                    parent.color = "#a17c6b";
                                 }
 
-                                // Alle Objekte der QML-Hierarchie durchlaufen
-                                for (var i = 1; i <= 20; i++) {
-                                    var item = eval("checkBox" + i);
+                                onClicked: {
+                                    var checkedItems = []; // Liste für ausgewählte Checkboxen
+                                    var checkBoxes = []
 
-                                    // Prüfen, ob die ID "checkBox" enthält und ob das Element eine Checkbox ist
-                                    if (item.checked) {
-                                        checkedItems.push(item.text);
+                                    if (checkBox.checked) {
+                                        checkedItems.push(checkBox.text);
+                                    }
+
+                                    // Alle Objekte der QML-Hierarchie durchlaufen
+                                    for (var i = 1; i <= 20; i++) {
+                                        var item = eval("checkBox" + i);
+
+                                        // Prüfen, ob die ID "checkBox" enthält und ob das Element eine Checkbox ist
+                                        if (item.checked) {
+                                            checkedItems.push(item.text);
+                                        }
+                                    }
+
+                                    if (checkedItems.length != 5) {
+                                        return;
+                                    }
+
+                                    if (checkedItems.includes("Eingebracht:")) {
+                                        backend.getAbiMark(checkedItems[0], checkedItems[1], checkedItems[2], checkedItems[3], checkedItems[4], parseInt(textInput.text))
+                                    } else {
+                                        backend.getAbiMark(checkedItems[0], checkedItems[1], checkedItems[2], checkedItems[3], checkedItems[4], -1)
                                     }
                                 }
+                            }
 
-                                console.log(checkedItems)
+                            Text {
+                                id: _text13
+                                text: qsTr("Prognose berechnen")
+                                anchors.verticalCenter: parent.verticalCenter
+                                font.pixelSize: 28
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                font.bold: true
+                            }
+                        }
 
-                                if (checkedItems.length != 5) {
-                                    return;
-                                }
+                        Item {
+                            id: _item10
+                            y: 0
+                            height: parent.height
+                            anchors.left: parent.left
+                            anchors.right: rectangle13.left
+                            anchors.leftMargin: 0
+                            anchors.rightMargin: 30
 
-                                if (checkedItems.includes("Eingebracht:")) {
-                                    backend.getAbiMark(checkedItems[0], checkedItems[1], checkedItems[2], checkedItems[3], checkedItems[4], parseInt(textInput.text))
-                                } else {
-                                    backend.getAbiMark(checkedItems[0], checkedItems[1], checkedItems[2], checkedItems[3], checkedItems[4], -1)
+                            Text {
+                                id: _text14
+                                text: qsTr("Abiturschnitt:")
+                                anchors.verticalCenter: parent.verticalCenter
+                                font.pixelSize: 24
+                            }
+
+                            Rectangle {
+                                id: rectangle5
+                                width: 95
+                                height: 65
+                                color: "#b5d0c2"
+                                radius: 20
+                                border.width: 0
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: _text14.right
+                                anchors.leftMargin: 15
+
+                                Text {
+                                    id: _text15
+                                    text: noteAbitur
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    font.pixelSize: 24
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    font.bold: true
                                 }
                             }
                         }
 
-                        Text {
-                            id: _text13
-                            text: qsTr("Prognose berechnen")
-                            anchors.verticalCenter: parent.verticalCenter
-                            font.pixelSize: 28
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            font.bold: true
+                        Item {
+                            id: _item11
+                            y: 0
+                            height: parent.height
+                            anchors.left: rectangle13.right
+                            anchors.right: parent.right
+                            anchors.leftMargin: 30
+                            anchors.rightMargin: 0
+
+                            Text {
+                                id: _text16
+                                text: qsTr("Abiturpunkte:")
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: rectangle14.left
+                                anchors.rightMargin: 15
+                                font.pixelSize: 24
+                            }
+
+                            Rectangle {
+                                id: rectangle14
+                                width: 130
+                                height: 65
+                                color: "#b5d0c2"
+                                radius: 20
+                                border.width: 0
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: parent.right
+                                anchors.rightMargin: 0
+                                Text {
+                                    id: _text17
+                                    text: punkteAbitur
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    font.pixelSize: 24
+                                    font.bold: true
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                            }
                         }
                     }
-
                 }
 
+                // Connections-Element, empfängt gesandte Daten vom Backend
+                Connections {
+                    target: backend
+                    function onSendData(usage, data) {
+                        // Prüfen des Usage und Aktion ausführen (Daten eintragen, Durchschnitt ändern, Diagramm Skalierung)
+                        if (usage == "abinote") {
+                            var abinote = data.split("/")[0]
+                            var punkte = data.split("/")[1]
 
+                            punkteAbitur = punkte + "/900";
+                            noteAbitur = abinote;
+                        }
+                    }
+                }
             }
         }
     }

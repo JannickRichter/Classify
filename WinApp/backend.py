@@ -57,7 +57,7 @@ class Backend(QObject):
         if months == 0:
             self.sendDataToQML("chart", edupage.getMarkHistory(months=self.variables.lastMonths, year=self.variables.schoolYear, term=self.variables.schoolHalf))
         else:
-            self.variables.lastMonths = months
+            self.variables.setLastMonths(months=months)
             self.sendDataToQML("chart", edupage.getMarkHistory(months=months, year=self.variables.schoolYear, term=self.variables.schoolHalf))
 
     # Daten an QML senden
@@ -78,8 +78,6 @@ class Backend(QObject):
     # Klassenänderung empfangen
     @Slot(str)
     def noteClass(self, selection):
-        self.variables.setClassSelected(True)
-
         self.variables.schoolClass = int(selection.split("/")[0])
         self.variables.schoolHalf = Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND
 
@@ -94,6 +92,6 @@ class Backend(QObject):
 
         edupage = EdupageAPI()
         if semi_mark == -1:
-            edupage.getAbiGrade(sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, sub5=sub5)
+            self.sendDataToQML("abinote", edupage.getAbiGrade(sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, sub5=sub5))
         else:
-            edupage.getAbiGrade(sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, semi_mark=semi_mark)
+            self.sendDataToQML("abinote", edupage.getAbiGrade(sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, semi_mark=semi_mark))

@@ -55,9 +55,6 @@ class EdupageAPI(Edupage):
         final_grades = defaultdict(dict)  # Speichert alle Noten für jedes Fach
 
         variables = Variables()
-        if not variables.schoolClassSelected:
-            print("Kein Schuljahr eingegeben")
-            return None
 
         klasse = variables.schoolClass
         school_year_edupage = variables.schoolYear
@@ -246,7 +243,7 @@ class EdupageAPI(Edupage):
     
         print("Notenschnitt: " + str(abitur_note))
 
-        #return final_grades
+        return str(abitur_note) + "/" + str(int(round(abitur_punkte, 0)))
     
 
     def getEduPageName(self, faecher, sub1, sub2, sub3, sub4, sub5 = None):
