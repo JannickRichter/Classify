@@ -12,7 +12,7 @@ from backend import Backend
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("./WinApp/material/icon1.png"))
+    app.setWindowIcon(QIcon("./material/icon1.png"))
     engine = QQmlApplicationEngine()
 
     backend = Backend()
