@@ -421,13 +421,15 @@ class EdupageAPI(Edupage):
                     value = 0.0
 
                 # Test auf Kursarbeit / Klausur
-                if re.search(r"\b(ka|KA|Ka|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title):
+                if re.search(r"\b(ka|KA|Ka|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title) and subject.isupper():
                     exam_grades.append(value)
                 else:
                     normal_grades.append(value)
 
+            variables = Variables()
+
             # Durchschnitt berechnen
-            if exam_grades:  # Falls es Kursarbeiten gibt
+            if exam_grades and variables.schoolClass >= 11:  # Falls es Kursarbeiten gibt
                 exam_weight = 1 / 3
                 normal_weight = 2 / 3
 
@@ -504,30 +506,3 @@ class EdupageAPI(Edupage):
 
         # Ausgabe als JSON-String für QML Diagramm
         return json.dumps(output)
-
-#Objekt der EdupageAPI-Klasse erstellen
-edupage_instance = EdupageAPI()
-
-'''# Mit Benutzerdaten anmelden (ersetze durch echte Daten)
-username = ""
-password = ""
-school = "duden-gymn"
-edupage_instance.login(username, password, school)
-
-# Falls erfolgreich eingeloggt, getAbiGrade ausführen
-if edupage_instance.isLoggedIn():
-    klasse = 12  # Beispiel: aktuelles Schuljahr
-    school_year_edupage = 2024  # Beispiel: 1. Halbjahr
-    sub1 = "MA"
-    sub2 = "WR"
-    sub3 = "EN"
-    sub4 = "if"
-    sub5 = None
-
-    semi_mark = 14
-    # Notenberechnung starten
-    result = edupage_instance.getAbiGrade(sub1, sub2, sub3, sub4, sub5, semi_mark)
-
-    print(result)
-else:
-    print("Login fehlgeschlagen! Überprüfe Benutzername, Passwort und Schule.")'''
