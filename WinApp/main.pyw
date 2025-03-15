@@ -20,7 +20,7 @@ if __name__ == "__main__":
     # Backend nach QML
     engine.rootContext().setContextProperty("backend", backend)
 
-    engine.load("./WinApp/qml/main.qml")  # Lädt die UI
+    engine.load("./qml/main.qml")  # Lädt die UI
 
     if not engine.rootObjects():
         sys.exit(-1)
