@@ -34,15 +34,15 @@ class Backend(QObject):
     def check_login_status(self):
         edupage = EdupageAPI()
         grade_instance = Grades(edupage.edupage)
-
-        if edupage.isLoggedIn():
-            if len(grade_instance.get_grades(term=self.variables.schoolHalf, year=datetime.now().year)) > 0:
-                self.variables.schoolYear = int(datetime.now().year)
-            elif len(grade_instance.get_grades(term=self.variables.schoolHalf, year=(int(datetime.now().year) - 1))) > 0:
-                self.variables.schoolYear = int(datetime.now().year) - 1
-        
+     
         if edupage.isLoggedIn():
             print("Edupage logged in!")
+
+            if len(grade_instance.get_grades(term=self.variables.schoolHalf, year=datetime.now().year)) > 0:
+                self.variables.setSchoolYear(int(datetime.now().year))
+            elif len(grade_instance.get_grades(term=self.variables.schoolHalf, year=(int(datetime.now().year) - 1))) > 0:
+                self.variables.setSchoolYear(int(datetime.now().year) - 1)
+
             self.loginSuccess.emit(True)
             QTimer.singleShot(400, lambda: self.sendDataToQML("chart", edupage.getMarkHistory(months=3, year=self.variables.schoolYear, term=self.variables.schoolHalf)))
             QTimer.singleShot(400, lambda: self.sendDataToQML("average", str(edupage.getAverage(self.variables.schoolYear, self.variables.schoolHalf))))
@@ -78,8 +78,8 @@ class Backend(QObject):
     # Klassenänderung empfangen
     @Slot(str)
     def noteClass(self, selection):
-        self.variables.schoolClass = int(selection.split("/")[0])
-        self.variables.schoolHalf = Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND
+        self.variables.setSchoolClass(int(selection.split("/")[0]))
+        self.variables.setSchoolHalf(Term.FIRST if int(selection.split("/")[1]) == 1 else Term.SECOND)
 
         if self.variables.schoolClass == 12 or self.variables.schoolClass == 11:
             self.sendDataToQML("chart_scale", "15")

@@ -14,3 +14,12 @@ class Variables():
 
     def setLastMonths(self, months):
         self.lastMonths = months
+
+    def setSchoolClass(self, value: int):
+        self.schoolClass = value
+
+    def setSchoolHalf(self, term: Term):
+        self.schoolHalf = term
+
+    def setSchoolYear(self, year: int):
+        self.schoolYear = year
