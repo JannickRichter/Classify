@@ -437,11 +437,12 @@ class EdupageAPI(Edupage):
                 normal_avg = sum(normal_grades) / len(normal_grades) if len(normal_grades) > 0 else 0
 
                 subject_avg = (exam_avg * exam_weight) + (normal_avg * normal_weight)
-                subject_avg = round(subject_avg, 0)
+                subject_avg = math.ceil(subject_avg) if subject_avg % 1 >= 0.5 else round(subject_avg, 0)
             else:
                 # Falls keine Kursarbeit existiert
                 if len(normal_grades) > 0:
-                    subject_avg = round(sum(normal_grades) / len(normal_grades), 0)
+                    subject_avg = sum(normal_grades) / len(normal_grades)
+                    subject_avg = math.ceil(subject_avg) if subject_avg % 1 >= 0.5 else round(subject_avg, 0)
                 else:
                     subject_avg = 0
 
