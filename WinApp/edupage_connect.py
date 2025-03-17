@@ -112,7 +112,7 @@ class EdupageAPI(Edupage):
                     subject_avg = (exam_avg * exam_weight) + (normal_avg * normal_weight)
 
                     # Note auf ganze Zahl runden (ab ,5 aufrunden)
-                    rounded_avg = math.ceil(subject_avg) if subject_avg % 1 >= 0.5 else round(subject_avg)
+                    rounded_avg = math.ceil(subject_avg) if subject_avg % 1 >= 0.5 else round(subject_avg, 0)
 
                     # Speicherung aller Noten für das Fach (mit Edupage-Namen)
                     final_grades[subject][(year, term)] = rounded_avg  # Speichert die Note mit Jahr und Halbjahr
@@ -126,12 +126,11 @@ class EdupageAPI(Edupage):
             while len(all_grades) < 4:
                 if all_grades:  # Falls schon Noten vorhanden sind, berechne den Durchschnitt
                     avg = sum(all_grades) / len(all_grades)
-                    all_grades.append(round(avg))  # Durchschnitt aufrunden und hinzufügen
+                    all_grades.append(round(avg, 0))  # Durchschnitt aufrunden und hinzufügen
                 else:
                     return None # Falls keine Noten vorhanden sind
 
             # Neue Noten zurück in das Dictionary einfügen, basierend auf den Schuljahren und Halbjahren
-            available_terms = sorted(term_dict.keys(), key=lambda x: (x[0], x[1].value))
             missing_terms = [(year, term) for year in range(start_year, start_year + 2) for term in [Term.FIRST, Term.SECOND] if (year, term) not in term_dict]
 
             for missing_term in missing_terms:
@@ -141,6 +140,7 @@ class EdupageAPI(Edupage):
 
             # Endgültiges Dictionary speichern
             final_grades[subject] = dict(sorted(term_dict.items(), key=lambda x: (x[0][0], x[0][1].value)))
+            
         # Dictionary, das speichert, wie viele Noten pro Fach bereits gestrichen wurden
         removed_count_per_subject = defaultdict(int)
 
