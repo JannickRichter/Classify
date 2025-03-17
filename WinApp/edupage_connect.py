@@ -412,12 +412,10 @@ class EdupageAPI(Edupage):
 
             for note in subject_notes:
                 # Versuche, den Wert als float zu interpretieren
-                # Falls dies scheitert, setze eine alternative Zahl (z.B. 0 oder ignore)
                 try:
                     value = float(note.grade_n)
                 except (ValueError, TypeError):
                     # Wenn das Notenfeld leer oder kein Float ist,
-                    # kannst du es wahlweise ignorieren oder als 0.0 setzen
                     value = 0.0
 
                 # Test auf Kursarbeit / Klausur

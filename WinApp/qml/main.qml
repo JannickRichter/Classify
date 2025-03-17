@@ -10,6 +10,7 @@ Window {
     visible: true
     title: "Classify"
 
+    //Login oder Dashboardseite laden
     Loader {
         id: pageLoader
         anchors.fill: parent

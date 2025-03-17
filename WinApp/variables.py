@@ -12,6 +12,7 @@ class Variables():
     def __init__(self):
         super().__init__()
 
+    #Variablen festlegen
     def setLastMonths(self, months):
         self.lastMonths = months
 
