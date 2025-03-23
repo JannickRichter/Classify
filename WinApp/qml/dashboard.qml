@@ -432,6 +432,7 @@ Item {
                 id: abiturnoteWrapper
                 anchors.fill: parent
 
+                //Schulklasse Abfrage (Dropdown)
                 Item {
                     id: row4
                     width: 2 * parent.width / 8
@@ -502,6 +503,7 @@ Item {
                         font.bold: true
                     }
 
+                    //Wrapper für Boxen mit allen Fächern und Checkboxen
                     Item {
                         id: _item2
                         height: 450
@@ -523,9 +525,6 @@ Item {
                             anchors.bottom: parent.bottom
                             anchors.topMargin: 0
                             anchors.bottomMargin: 0
-
-
-
 
                             Text {
                                 id: _text8

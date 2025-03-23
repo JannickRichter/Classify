@@ -1,6 +1,7 @@
 import sys
 import os
 
+#Windows Bildschirmskalierung für die App auf 100% setzen
 os.environ["QT_SCALE_FACTOR"] = "1"
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0"
 os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
