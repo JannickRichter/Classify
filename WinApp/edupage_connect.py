@@ -69,6 +69,8 @@ class EdupageAPI(Edupage):
 
         for year in range(start_year, start_year + 2):  # Durchläuft 11. und 12. Klasse
             for term in [Term.FIRST, Term.SECOND]:  # Beide Halbjahre berücksichtigen
+
+                #KURZ
                 grades_instance = Grades(self.edupage)
                 grades = grades_instance.get_grades(term=term, year=year)
                 subject_grades = defaultdict(list)
@@ -85,6 +87,8 @@ class EdupageAPI(Edupage):
                     print(f"Nicht genügend Noten für {year} {term} vorhanden.")
                     continue  # Halbjahr wird übersprungen
 
+                # LANG
+
                 # Berechnung der Noten
                 for subject, subject_notes in subject_grades.items():
                     normal_grades = []
@@ -92,7 +96,7 @@ class EdupageAPI(Edupage):
 
                     # Fächer nach Kursarbeiten filtern
                     for note in subject_notes:
-                        if re.search(r"\b(ka|KA|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title) and subject.isupper():  
+                        if re.search(r"\b(ka|KA|kursarbeit|Kursarbeit|Klausur|klausur)\b", note.title) and subject.isupper():
                             exam_grades.append(note.grade_n)  # Kursarbeiten speichern
                         else:
                             normal_grades.append(note.grade_n)  # Normale Noten speichern
